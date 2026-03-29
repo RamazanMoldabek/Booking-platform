@@ -1,0 +1,131 @@
+.service-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.service-detail-hero {
+  position: relative;
+  min-height: 420px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.service-detail-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.9));
+}
+
+.service-detail-hero-overlay {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  color: white;
+}
+
+.service-detail-badge {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #e0e7ff;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.service-detail-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3.25rem);
+}
+
+.service-detail-hero p {
+  max-width: 720px;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+}
+
+.service-detail-body {
+  display: flex;
+  justify-content: center;
+}
+
+.service-detail-info {
+  width: min(980px, 100%);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.service-detail-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.service-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.service-detail-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.service-detail-copy {
+  display: grid;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.service-detail-copy h2,
+.service-detail-copy h3 {
+  color: var(--text-primary);
+}
+
+.service-detail-copy ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+
+.service-detail-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.service-detail-actions .btn-book {
+  padding: 0.95rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .service-detail-hero {
+    min-height: 320px;
+  }
+
+  .service-detail-hero-overlay {
+    padding: 1.5rem;
+  }
+
+  .service-detail-body {
+    padding: 0 1rem;
+  }
+}

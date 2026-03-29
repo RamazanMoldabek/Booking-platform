@@ -1,0 +1,113 @@
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.payment-card {
+  max-width: 450px;
+  width: 100%;
+}
+
+.success-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 3rem 2rem;
+}
+
+.success-icon {
+  color: var(--success);
+  margin-bottom: 1rem;
+}
+
+.redirect-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.payment-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.payment-icon {
+  color: var(--primary-color);
+}
+
+.payment-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+/* Mock Credit Card styles */
+.mock-credit-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.mock-credit-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.mock-card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.chip {
+  width: 40px;
+  height: 25px;
+  background: linear-gradient(135deg, #d4af37, #aa801b);
+  border-radius: 4px;
+}
+
+.wifi {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: rgba(255,255,255,0.7);
+  transform: rotate(90deg);
+}
+
+.mock-card-number {
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  margin-bottom: 1.5rem;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.mock-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.btn-payment {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
