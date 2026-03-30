@@ -27,9 +27,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'API is running' });
+  res.json({ 
+    status: 'API is running',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log('==========================================');
+  console.log(`Server is running on port: ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Database Config: ${process.env.DATABASE_URL ? 'Using DATABASE_URL' : 'Using individual DB_* variables'}`);
+  console.log('==========================================');
 });
