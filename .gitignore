@@ -1,6 +1,7 @@
 # Ignore local env files
 /backend/.env
 /frontend/.env
+/dump.sql
 
 # Node modules
 /node_modules

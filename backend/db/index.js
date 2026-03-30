@@ -1,18 +1,16 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
-const poolConfig = process.env.DATABASE_URL 
-  ? { 
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // Required for Render/Supabase external connections
-    }
-  : {
-      user: process.env.DB_USER || 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      database: process.env.DB_NAME || 'booking_db',
-      password: process.env.DB_PASSWORD || '1234',
-      port: process.env.DB_PORT || 5432,
-    };
+if (!process.env.DATABASE_URL) {
+  console.error('FATAL ERROR: DATABASE_URL environment variable is missing.');
+  console.error('Пожалуйста, добавьте DATABASE_URL в ваш файл .env');
+  process.exit(1);
+}
+
+const poolConfig = { 
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Обязательно для Render
+};
 
 const pool = new Pool(poolConfig);
 

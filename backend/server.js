@@ -38,6 +38,6 @@ app.listen(PORT, () => {
   console.log('==========================================');
   console.log(`Server is running on port: ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Database Config: ${process.env.DATABASE_URL ? 'Using DATABASE_URL' : 'Using individual DB_* variables'}`);
+  console.log(`Database Config: Using Render DATABASE_URL`);
   console.log('==========================================');
 });
