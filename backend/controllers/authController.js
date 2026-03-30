@@ -1,3 +1,6 @@
+// backend/controllers/authController.js
+// Контроллеры авторизации: регистрация и вход.
+// Создает JWT для клиента и возвращает данные пользователя.
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
@@ -6,6 +9,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 const TOKEN_EXPIRATION = '7d';
 
 const createToken = (user) => {
+  // Создает JWT на основе данных пользователя.
+  // Токен содержит id, email, имя и флаг is_admin.
   return jwt.sign(
     {
       id: user.id,

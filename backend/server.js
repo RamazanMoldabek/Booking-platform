@@ -1,3 +1,7 @@
+// backend/server.js
+// Точка входа для бэкенд-сервера.
+// Загружает переменные окружения, создает Express-приложение,
+// подключает middleware и маршруты, а затем запускает сервер.
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Routes will be imported here
+// Импорт маршрутов: каждый модуль отвечает за свою часть API.
 const serviceRoutes = require('./routes/serviceRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
