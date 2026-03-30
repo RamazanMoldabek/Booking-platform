@@ -1,3 +1,6 @@
+// frontend/src/App.jsx
+// Главный компонент приложения. Настраивает роутинг для всех страниц frontend.
+// Здесь подключается Navbar и определяются основные URL-адреса.
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';

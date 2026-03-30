@@ -1,11 +1,13 @@
+// frontend/src/pages/ServiceDetails.jsx
+// Страница детали услуги. Показывает подробную информацию, фото и кнопку бронирования.
+// Если пользователь не в системе, предлагает перейти на страницу логина.
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Clock, DollarSign, Globe, ExternalLink, ArrowRight } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import API_URL from '../apiConfig';
 import './ServiceDetails.css';
-
-const API_URL = 'http://localhost:5000/api';
 const placeholderImage = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80';
 const defaultWebsite = 'https://example.com';
 

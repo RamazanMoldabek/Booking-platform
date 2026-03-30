@@ -1,10 +1,12 @@
+// frontend/src/pages/AdminPanel.jsx
+// Админ-панель. Позволяет создавать, редактировать и удалять услуги.
+// Доступна только пользователю с флагом is_admin.
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
+import API_URL from '../apiConfig';
 import './AdminPanel.css';
-
-const API_URL = 'http://localhost:5000/api';
 
 const AdminPanel = () => {
   const { user } = useAuth();

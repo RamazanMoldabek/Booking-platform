@@ -1,3 +1,5 @@
+// frontend/src/pages/Register.jsx
+// Страница регистрации. Отправляет данные на бэкенд через AuthContext.
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';

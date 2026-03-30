@@ -1,10 +1,13 @@
+// frontend/src/AuthContext.jsx
+// Контекст авторизации. Хранит состояние пользователя, JWT и общие методы логина/регистрации.
+// Обеспечивает доступ к авторизационным данным из любого компонента приложения.
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import API_URL from './apiConfig';
 
 // URL бэкенда для API-запросов.
 // В Vite переменные окружения доступны через import.meta.env.
 // Содержимое задаётся в файле frontend/.env как VITE_API_URL.
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {

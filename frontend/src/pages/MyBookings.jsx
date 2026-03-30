@@ -1,11 +1,12 @@
+// frontend/src/pages/MyBookings.jsx
+// Страница пользователя. Показывает его личные брони и статус оплаты.
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Calendar, Clock, CheckCircle, Clock3 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import API_URL from '../apiConfig';
 import './MyBookings.css';
-
-const API_URL = 'http://localhost:5000/api';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);

@@ -1,3 +1,5 @@
+// frontend/src/pages/Login.jsx
+// Страница логина. Показывает форму для входа и использует AuthContext для авторизации.
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';

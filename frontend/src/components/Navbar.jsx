@@ -1,3 +1,6 @@
+// frontend/src/components/Navbar.jsx
+// Навигационная панель сайта. Показывает ссылки в зависимости от авторизации пользователя.
+// Если пользователь админ, появляется ссылка на админ-панель.
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, CreditCard, Home, InfoIcon, Settings } from 'lucide-react';

@@ -1,9 +1,10 @@
+// frontend/src/pages/Home.jsx
+// Главная страница. Загружает список доступных услуг с бэкенда и отображает их.
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ServiceCard from '../components/ServiceCard';
+import API_URL from '../apiConfig';
 import './Home.css';
-
-const API_URL = 'http://localhost:5000/api';
 
 const Home = () => {
   const [services, setServices] = useState([]);

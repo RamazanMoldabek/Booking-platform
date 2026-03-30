@@ -1,12 +1,13 @@
+// frontend/src/pages/Booking.jsx
+// Страница обработки бронирования выбранной услуги.
+// Пользователь должен быть авторизован, чтобы создать бронь.
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Calendar, Clock, ArrowRight, UserPen } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import API_URL from '../apiConfig';
 import './Booking.css';
-
-
-const API_URL = 'http://localhost:5000/api';
 
 const Booking = () => {
   const { serviceId } = useParams();

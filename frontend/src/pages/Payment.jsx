@@ -1,11 +1,12 @@
+// frontend/src/pages/Payment.jsx
+// Страница оплаты. Загружает данные брони и отправляет платеж на бэкенд.
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CreditCard, CheckCircle } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import API_URL from '../apiConfig';
 import './Payment.css';
-
-const API_URL = 'http://localhost:5000/api';
 
 const Payment = () => {
   const { bookingId } = useParams();
