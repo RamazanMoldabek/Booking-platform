@@ -20,11 +20,13 @@ CREATE TABLE IF NOT EXISTS services (
   duration INTEGER DEFAULT 60,
   short_description TEXT,
   image_url TEXT,
-  website TEXT
+  website TEXT,
+  rating NUMERIC DEFAULT 4.5
 );
 
 ALTER TABLE services
   ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 60,
   ADD COLUMN IF NOT EXISTS short_description TEXT,
   ADD COLUMN IF NOT EXISTS image_url TEXT,
-  ADD COLUMN IF NOT EXISTS website TEXT;
+  ADD COLUMN IF NOT EXISTS website TEXT,
+  ADD COLUMN IF NOT EXISTS rating NUMERIC DEFAULT 4.5;

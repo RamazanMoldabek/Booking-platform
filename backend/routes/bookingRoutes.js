@@ -13,5 +13,7 @@ router.get('/me', authMiddleware, bookingController.getUserBookings);
 router.get('/user/:userId', bookingController.getUserBookings);
 // GET /api/bookings/:bookingId — получить детали конкретной брони
 router.get('/:bookingId', bookingController.getBookingById);
+// DELETE /api/bookings/:id — удалить свою бронь
+router.delete('/:id', authMiddleware, bookingController.deleteBooking);
 
 module.exports = router;
