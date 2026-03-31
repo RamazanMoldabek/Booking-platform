@@ -3,11 +3,11 @@
 // Если пользователь админ, появляется ссылка на админ-панель.
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, CreditCard, Home, InfoIcon, Settings } from 'lucide-react';
+import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import './Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ theme, toggleTheme }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -20,10 +20,13 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
+        {/* Logo Section */}
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">✨</span>
           <span className="logo-text">BookingPro</span>
         </Link>
+
+        {/* Links Section (Centered) */}
         <div className="navbar-links">
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
             <Home className="nav-icon" size={18} />
@@ -39,28 +42,31 @@ const Navbar = () => {
             <InfoIcon className="nav-icon" size={18} />
             <span>Біз туралы</span>
           </Link>
+          {user && user.is_admin && (
+            <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
+              <Settings className="nav-icon" size={18} />
+              <span>Admin</span>
+            </Link>
+          )}
+        </div>
 
+        {/* Actions Section (Right) */}
+        <div className="navbar-actions">
+          <button type="button" className="nav-button theme-toggle" onClick={toggleTheme}>
+            {theme === 'dark' ? <SunMedium size={16} /> : <Moon size={16} />}
+            <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
+          </button>
+          
           {user ? (
-            <>
-              {user.is_admin && (
-                <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
-                  <Settings className="nav-icon" size={18} />
-                  <span>Admin</span>
-                </Link>
-              )}
-              <button type="button" className="nav-button" onClick={handleLogout}>
-                Шығу
-              </button>
-            </>
+            <button type="button" className="nav-button" onClick={handleLogout}>
+              Шығу
+            </button>
           ) : (
-            <>
+            <div className="nav-loginBtn">
               <Link to="/login" className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}>
                 <span>Кіру</span>
               </Link>
-              <Link to="/register" className={`nav-link ${location.pathname === '/register' ? 'active' : ''}`}>
-                <span>Тіркелу</span>
-              </Link>
-            </>
+            </div>
           )}
         </div>
       </div>

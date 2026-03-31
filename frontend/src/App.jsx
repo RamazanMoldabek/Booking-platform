@@ -1,7 +1,7 @@
 // frontend/src/App.jsx
 // Главный компонент приложения. Настраивает роутинг для всех страниц frontend.
 // Здесь подключается Navbar и определяются основные URL-адреса.
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -14,10 +14,22 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light-theme', theme === 'light');
+    document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
+  };
+
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
+        <Navbar theme={theme} toggleTheme={toggleTheme} />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />

@@ -4,6 +4,44 @@
   padding: 2rem 0;
 }
 
+.home-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.filter-group select,
+.filter-group input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: 2px solid rgba(0, 174, 240, 0.3);
+  outline-offset: 2px;
+}
+
 .hero-subtitle {
   font-size: 1.2rem;
   color: var(--text-secondary);

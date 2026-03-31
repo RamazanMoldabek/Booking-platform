@@ -69,7 +69,7 @@ const ServiceDetails = () => {
             </div>
             <div className="service-detail-row">
               <Clock size={18} />
-              <span>Ұзақтығы: {service.duration} минут</span>
+              <span>Ұзақтығы: {service.duration} күн</span>
             </div>
             <div className="service-detail-row service-detail-link">
               <Globe size={18} />

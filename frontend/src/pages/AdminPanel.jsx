@@ -17,9 +17,10 @@ const AdminPanel = () => {
     description: '',
     short_description: '',
     price: '',
-    duration: '60',
+    duration: '1',
     image_url: '',
     website: '',
+    rating: '',
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -66,6 +67,7 @@ const AdminPanel = () => {
         duration: Number(formData.duration),
         image_url: formData.image_url,
         website: formData.website,
+        rating: formData.rating ? Number(formData.rating) : undefined,
       };
 
       const response = editMode
@@ -85,9 +87,10 @@ const AdminPanel = () => {
         description: '',
         short_description: '',
         price: '',
-        duration: '60',
+        duration: '1',
         image_url: '',
         website: '',
+        rating: '',
       });
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to save service.');
@@ -102,9 +105,10 @@ const AdminPanel = () => {
       description: '',
       short_description: '',
       price: '',
-      duration: '60',
+      duration: '1',
       image_url: '',
       website: '',
+      rating: '',
     });
     setError('');
     setSuccessMessage('');
@@ -118,9 +122,10 @@ const AdminPanel = () => {
       description: service.description,
       short_description: service.short_description || '',
       price: service.price?.toString() || '',
-      duration: service.duration?.toString() || '60',
+      duration: service.duration?.toString() || '1',
       image_url: service.image_url || '',
       website: service.website || '',
+      rating: service.rating?.toString() || '',
     });
     setError('');
     setSuccessMessage('');
@@ -179,9 +184,23 @@ const AdminPanel = () => {
               <input name="price" type="number" value={formData.price} onChange={handleChange} required />
             </div>
             <div>
-              <label>Длительность (минуты)</label>
+              <label>Длительность (дни)</label>
               <input name="duration" type="number" value={formData.duration} onChange={handleChange} />
             </div>
+          </div>
+
+          <div className="admin-row">
+            <label>Рейтинг (0–5)</label>
+            <input
+              name="rating"
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              value={formData.rating}
+              onChange={handleChange}
+              placeholder="4.5"
+            />
           </div>
 
           <div className="admin-row">
@@ -218,7 +237,7 @@ const AdminPanel = () => {
               </div>
               <p>{service.short_description || service.description}</p>
               <div className="admin-service-meta">
-                <span>Длительность: {service.duration || 60} мин</span>
+                <span>Длительность: {service.duration || 1} дн</span>
                 {service.website && (
                   <a href={service.website} target="_blank" rel="noreferrer">
                     Сайт

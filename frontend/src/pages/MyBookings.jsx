@@ -15,25 +15,37 @@ const MyBookings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const fetchBookings = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/bookings/me`);
+      setBookings(response.data);
+    } catch (err) {
+      setError('Failed to load your bookings. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       navigate('/login');
       return;
     }
 
-    const fetchBookings = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/bookings/me`);
-        setBookings(response.data);
-      } catch (err) {
-        setError('Failed to load your bookings. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBookings();
   }, [user, navigate]);
+
+  const handleDelete = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+
+    try {
+      await axios.delete(`${API_URL}/bookings/${bookingId}`);
+      // Refresh the list after deletion
+      fetchBookings();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to cancel booking.');
+    }
+  };
 
   if (loading) return <div className="loading">Loading your bookings...</div>;
 
@@ -78,11 +90,18 @@ const MyBookings = () => {
                   <div className="booking-price">${booking.service_price}</div>
                 </div>
 
-                {booking.status === 'pending' && (
-                  <div className="booking-actions">
+                <div className="booking-actions">
+                  {booking.status === 'pending' && (
                     <a href={`/payment/${booking.id}`} className="btn btn-payment-small">Complete Payment</a>
-                  </div>
-                )}
+                  )}
+                  <button 
+                    onClick={() => handleDelete(booking.id)} 
+                    className="btn btn-secondary btn-payment-small"
+                    style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                  >
+                    Cancel Booking
+                  </button>
+                </div>
               </div>
             );
           })}

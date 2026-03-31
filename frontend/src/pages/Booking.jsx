@@ -78,7 +78,7 @@ const Booking = () => {
         <p className="service-desc">{service.description}</p>
         
         <div className="service-meta">
-          <div className="meta-item"><Clock size={18}/> {service.duration} mins</div>
+          <div className="meta-item"><Clock size={18}/> {service.duration} дня/дней</div>
           <div className="meta-item price">${service.price}</div>
         </div>
 

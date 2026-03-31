@@ -110,9 +110,11 @@
 .service-detail-actions {
   display: flex;
   justify-content: flex-start;
+  gap: 1rem;
 }
 
 .service-detail-actions .btn-book {
+  margin-right: 1rem;
   padding: 0.95rem 1.5rem;
 }
 
