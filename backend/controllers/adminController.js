@@ -2,16 +2,29 @@ const db = require('../db');
 
 exports.createService = async (req, res) => {
   try {
-    const { title, description, short_description, price, duration, image_url, website, rating } = req.body;
+    const { title, description, short_description, price, duration, website, rating, address, advantages } = req.body;
 
     if (!title || !description || !price) {
       return res.status(400).json({ error: 'Title, description, and price are required.' });
     }
 
+    // Handle multiple image uploads
+    const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
+    // Parse advantages if sent as string (FormData)
+    let parsedAdvantages = [];
+    if (advantages) {
+      try {
+        parsedAdvantages = typeof advantages === 'string' ? JSON.parse(advantages) : advantages;
+      } catch (e) {
+        console.error('Error parsing advantages:', e);
+      }
+    }
+
     const serviceRating = rating ? Number(rating) : 4.5;
     const insertQuery = `
-      INSERT INTO services (title, description, short_description, price, duration, image_url, website, rating)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO services (title, description, short_description, price, duration, website, rating, images, address, advantages)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *
     `;
 
@@ -21,9 +34,11 @@ exports.createService = async (req, res) => {
       short_description ? short_description.trim() : null,
       Number(price),
       duration ? Number(duration) : 1,
-      image_url ? image_url.trim() : null,
       website ? website.trim() : null,
       serviceRating,
+      imageUrls,
+      address ? address.trim() : null,
+      JSON.stringify(parsedAdvantages),
     ];
 
     const { rows } = await db.query(insertQuery, values);
@@ -37,10 +52,36 @@ exports.createService = async (req, res) => {
 exports.updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, short_description, price, duration, image_url, website, rating } = req.body;
+    const { title, description, short_description, price, duration, website, rating, address, advantages, existing_images } = req.body;
 
     if (!title || !description || !price) {
       return res.status(400).json({ error: 'Title, description, and price are required.' });
+    }
+
+    // Handle new images
+    const newImageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    
+    // Handle existing images (sent as JSON string from FormData)
+    let finalImages = [];
+    if (existing_images) {
+      try {
+        finalImages = typeof existing_images === 'string' ? JSON.parse(existing_images) : existing_images;
+      } catch (e) {
+        console.error('Error parsing existing_images:', e);
+      }
+    }
+    
+    // Combine existing (retained) images and new uploads
+    finalImages = [...finalImages, ...newImageUrls];
+
+    // Parse advantages
+    let parsedAdvantages = [];
+    if (advantages) {
+      try {
+        parsedAdvantages = typeof advantages === 'string' ? JSON.parse(advantages) : advantages;
+      } catch (e) {
+        console.error('Error parsing advantages:', e);
+      }
     }
 
     const serviceRating = rating ? Number(rating) : 4.5;
@@ -51,10 +92,12 @@ exports.updateService = async (req, res) => {
           short_description = $3,
           price = $4,
           duration = $5,
-          image_url = $6,
-          website = $7,
-          rating = $8
-      WHERE id = $9
+          website = $6,
+          rating = $7,
+          images = $8,
+          address = $9,
+          advantages = $10
+      WHERE id = $11
       RETURNING *
     `;
 
@@ -64,9 +107,11 @@ exports.updateService = async (req, res) => {
       short_description ? short_description.trim() : null,
       Number(price),
       duration ? Number(duration) : 1,
-      image_url ? image_url.trim() : null,
       website ? website.trim() : null,
       serviceRating,
+      finalImages,
+      address ? address.trim() : null,
+      JSON.stringify(parsedAdvantages),
       id,
     ];
 
