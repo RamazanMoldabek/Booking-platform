@@ -89,30 +89,72 @@ exports.getBookingById = async (req, res) => {
   }
 };
 
-exports.deleteBooking = async (req, res) => {
+exports.cancelBooking = async (req, res) => {
   const { id } = req.params;
   const user = req.user;
 
   if (!user) {
-    return res.status(401).json({ error: 'User must be logged in to delete a booking.' });
+    return res.status(401).json({ error: 'User must be logged in to cancel a booking.' });
   }
 
   try {
-    // Only allow deletion if the booking belongs to this user
-    // (Admin can be added later if needed)
-    const deleteQuery = 'DELETE FROM bookings WHERE id = $1 AND user_id = $2 RETURNING *';
-    const { rows } = await db.query(deleteQuery, [id, user.id]);
+    // 1. First, check if the booking exists and its current status
+    const findQuery = 'SELECT * FROM bookings WHERE id = $1 AND user_id = $2';
+    const { rows: findRows } = await db.query(findQuery, [id, user.id]);
 
-    if (rows.length === 0) {
-      return res.status(404).json({ 
-        error: 'Booking not found or not authorized for deletion.' 
-      });
+    if (findRows.length === 0) {
+      return res.status(404).json({ error: 'Booking not found or not authorized.' });
     }
 
-    console.log(`Booking ID ${id} deleted by user ${user.id}.`);
-    res.json({ success: true, message: 'Booking deleted successfully.' });
+    const booking = findRows[0];
+
+    // 2. Check if it's already cancelled
+    if (booking.status === 'cancelled') {
+      return res.status(400).json({ error: 'Booking already cancelled.' });
+    }
+
+    // 3. Update the booking status instead of deleting
+    // Note: We include cancelled_at in the update. 
+    // If the column wasn't added to your DB yet, this query might fail.
+    const updateQuery = `
+      UPDATE bookings 
+      SET status = 'cancelled', 
+          cancelled_at = NOW() 
+      WHERE id = $1 AND user_id = $2 
+      RETURNING *
+    `;
+    const { rows: updateRows } = await db.query(updateQuery, [id, user.id]);
+
+    console.log(`Booking ID ${id} cancelled by user ${user.id} at ${new Date().toISOString()}.`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Booking cancelled successfully',
+      booking: updateRows[0]
+    });
   } catch (err) {
-    console.error('Error deleting booking:', err);
-    res.status(500).json({ error: 'Internal server error while deleting booking.' });
+    console.error('Error cancelling booking:', err);
+    
+    // Fallback if cancelled_at column doesn't exist yet
+    if (err.code === '42703') { // undefined_column
+      try {
+        const fallbackQuery = `
+          UPDATE bookings 
+          SET status = 'cancelled' 
+          WHERE id = $1 AND user_id = $2 
+          RETURNING *
+        `;
+        const { rows: fallbackRows } = await db.query(fallbackQuery, [id, user.id]);
+        return res.json({ 
+          success: true, 
+          message: 'Booking cancelled successfully (without timestamp)',
+          booking: fallbackRows[0]
+        });
+      } catch (fallbackErr) {
+        console.error('Fallback cancellation failed:', fallbackErr);
+      }
+    }
+    
+    res.status(500).json({ error: 'Internal server error while cancelling booking.' });
   }
 };

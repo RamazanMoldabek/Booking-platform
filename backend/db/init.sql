@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS services (
   title VARCHAR,
   description TEXT,
   price NUMERIC,
-  duration INTEGER DEFAULT 60,
+  duration INTEGER DEFAULT 1,
   short_description TEXT,
   image_url TEXT,
   website TEXT,
@@ -25,8 +25,11 @@ CREATE TABLE IF NOT EXISTS services (
 );
 
 ALTER TABLE services
-  ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 60,
+  ADD COLUMN IF NOT EXISTS duration INTEGER DEFAULT 1,
   ADD COLUMN IF NOT EXISTS short_description TEXT,
   ADD COLUMN IF NOT EXISTS image_url TEXT,
   ADD COLUMN IF NOT EXISTS website TEXT,
   ADD COLUMN IF NOT EXISTS rating NUMERIC DEFAULT 4.5;
+
+ALTER TABLE bookings
+  ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP WITH TIME ZONE;
