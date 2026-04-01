@@ -23,8 +23,8 @@ exports.createService = async (req, res) => {
 
     const serviceRating = rating ? Number(rating) : 4.5;
     const insertQuery = `
-      INSERT INTO services (title, description, short_description, price, duration, website, rating, images, address, advantages, latitude, longitude)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      INSERT INTO services (title, description, short_description, price, duration, website, rating, images, address, advantages, latitude, longitude, category_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *
     `;
 
@@ -41,6 +41,7 @@ exports.createService = async (req, res) => {
       JSON.stringify(parsedAdvantages),
       req.body.latitude ? Number(req.body.latitude) : null,
       req.body.longitude ? Number(req.body.longitude) : null,
+      req.body.category_id ? Number(req.body.category_id) : null,
     ];
 
     const { rows } = await db.query(insertQuery, values);
@@ -100,8 +101,9 @@ exports.updateService = async (req, res) => {
           address = $9,
           advantages = $10,
           latitude = $11,
-          longitude = $12
-      WHERE id = $13
+          longitude = $12,
+          category_id = $13
+      WHERE id = $14
       RETURNING *
     `;
 
@@ -118,6 +120,7 @@ exports.updateService = async (req, res) => {
       JSON.stringify(parsedAdvantages),
       req.body.latitude ? Number(req.body.latitude) : null,
       req.body.longitude ? Number(req.body.longitude) : null,
+      req.body.category_id ? Number(req.body.category_id) : null,
       id,
     ];
 
