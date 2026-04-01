@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import './Navbar.css';
+import logo from '../assets/Booking.png';
 
 const Navbar = ({ theme, toggleTheme }) => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const Navbar = ({ theme, toggleTheme }) => {
       <div className="navbar-container">
         {/* Logo Section */}
         <Link to="/" className="navbar-logo">
-          <span className="logo-icon">✨</span>
+          <img src={logo} alt="Logo" className="logo-icon" />
           <span className="logo-text">BookingPro</span>
         </Link>
 
@@ -54,9 +55,9 @@ const Navbar = ({ theme, toggleTheme }) => {
         <div className="navbar-actions">
           <button type="button" className="nav-button theme-toggle" onClick={toggleTheme}>
             {theme === 'dark' ? <SunMedium size={16} /> : <Moon size={16} />}
-            <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
+            <span>{theme === 'dark' ? '' : ''}</span>
           </button>
-          
+
           {user ? (
             <button type="button" className="nav-button" onClick={handleLogout}>
               Шығу

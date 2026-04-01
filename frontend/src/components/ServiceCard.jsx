@@ -1,10 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, DollarSign, ArrowRight, Star } from 'lucide-react';
+import API_URL from '../apiConfig';
 import './ServiceCard.css';
 
+const IMAGE_BASE_URL = API_URL.replace('/api', '');
+
 const ServiceCard = ({ service }) => {
-  const imageUrl = service.image_url || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80';
+  // Use the first image from the uploaded images array if it exists, otherwise fallback to placeholder
+  let imageUrl = 'https://tse4.mm.bing.net/th/id/OIP.RFDXdjS5yiwV0P2sposv-QHaEo?w=1600&h=1000&rs=1&pid=ImgDetMain&o=7&rm=3';
+
+  if (service.images && service.images.length > 0) {
+    const firstImg = service.images[0];
+    imageUrl = firstImg.startsWith('http') ? firstImg : IMAGE_BASE_URL + firstImg;
+  } else if (service.image_url) {
+    imageUrl = service.image_url;
+  }
+
   const rating = service.rating !== undefined ? Number(service.rating).toFixed(1) : null;
 
   return (
