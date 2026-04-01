@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import ServiceCard from '../components/ServiceCard';
+import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
 import './Home.css';
 
 const Home = () => {
   const [services, setServices] = useState([]);
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('default');
@@ -56,25 +58,24 @@ const Home = () => {
   return (
     <div className="home-container">
       <div className="home-hero">
-        <h1 className="animate-fade-in">Бізбен бірге тиімді, әрі тез саяхаттаңыз!</h1>
+        <h1 className="animate-fade-in">{t('heroTitle')}</h1>
         <p className="hero-subtitle animate-slide-up">
-          Келесі кездесуді оңай брондаңыз. Бастау үшін төмендегі қызметтің бірін таңдаңыз.
+          {t('heroSubtitle')}
         </p>
       </div>
 
       <div className="home-controls">
         <div className="filter-group">
-          <label>Сортировка</label>
+          <label>{t('sortBy')}</label>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="default">По умолчанию</option>
-            <option value="price-asc">Цена: по возрастанию</option>
-            <option value="price-desc">Цена: по убыванию</option>
-            <option value="rating-desc">Рейтинг: высокий</option>
-            <option value="rating-asc">Рейтинг: низкий</option>
+            <option value="default">{t('sortBy')}</option>
+            <option value="price-asc">↑ {t('price')}</option>
+            <option value="price-desc">↓ {t('price')}</option>
+            <option value="rating-desc">★ {t('rating')}</option>
           </select>
         </div>
         <div className="filter-group">
-          <label>Мин. цена</label>
+          <label>{t('minPrice')}</label>
           <input
             type="number"
             min="0"
@@ -84,7 +85,7 @@ const Home = () => {
           />
         </div>
         <div className="filter-group">
-          <label>Макс. цена</label>
+          <label>{t('maxPrice')}</label>
           <input
             type="number"
             min="0"
@@ -94,7 +95,7 @@ const Home = () => {
           />
         </div>
         <div className="filter-group">
-          <label>Мин. рейтинг</label>
+          <label>{t('minRating')}</label>
           <input
             type="number"
             min="0"

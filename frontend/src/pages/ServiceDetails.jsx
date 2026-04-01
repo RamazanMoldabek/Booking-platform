@@ -4,8 +4,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Clock, DollarSign, Globe, ExternalLink, ArrowRight, MapPin } from 'lucide-react';
+import { Clock, Globe, ExternalLink, ArrowRight, MapPin } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
 import './ServiceDetails.css';
 
@@ -16,6 +17,7 @@ const IMAGE_BASE_URL = API_URL.replace('/api', '');
 const ServiceDetails = () => {
   const { serviceId } = useParams();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -161,13 +163,25 @@ const ServiceDetails = () => {
           )}
 
           <div className="service-detail-card">
-            <div className="service-detail-row">
-              <DollarSign size={18} />
-              <span>Бағасы: ${service.price}</span>
-            </div>
-            <div className="service-detail-row">
-              <Clock size={18} />
-              <span>Ұзақтығы: {service.duration} күн</span>
+            <div className="info-grid">
+              <div className="info-item">
+                <div className="info-icon-wrapper">
+                  <span className="tenge-icon">₸</span>
+                </div>
+                <div className="info-text">
+                  <label>{t('price')}</label>
+                  <span>{service.price}</span>
+                </div>
+              </div>
+              <div className="info-item">
+                <div className="info-icon-wrapper">
+                  <Clock size={20} />
+                </div>
+                <div className="info-text">
+                  <label>{t('duration')}</label>
+                  <span>{service.duration || 1} {t('days')}</span>
+                </div>
+              </div>
             </div>
             {service.address && (
               <div className="service-detail-row">

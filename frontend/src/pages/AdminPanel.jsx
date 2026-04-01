@@ -4,7 +4,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Plus, Edit2, Trash2, Upload, MapPin, Search, Save, X } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
 import './AdminPanel.css';
 
@@ -13,9 +15,11 @@ const IMAGE_BASE_URL = API_URL.replace('/api', '');
 
 const AdminPanel = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [formData, setFormData] = useState({
+    id: null,
     title: '',
     description: '',
     short_description: '',
@@ -66,8 +70,6 @@ const AdminPanel = () => {
 
     fetchServices();
 
-    fetchServices();
-
     // Singleton-like Yandex Maps loader
     const scriptId = 'yandex-maps-api-script';
     const apiKey = 'ff8fb748-4eb6-45be-9b9c-f4c788a60db2';
@@ -110,47 +112,52 @@ const AdminPanel = () => {
     };
   }, [user, navigate]);
 
-  // Handle Map Initialization
+  // Handle Map Initialization with better robustness
   useEffect(() => {
+    let isMounted = true;
+
     if (isMapLoaded && mapRef.current && !mapInstance.current && window.ymaps) {
       window.ymaps.ready(() => {
-        // Prevent double initialization if ymaps.ready fires twice or similar
-        if (mapInstance.current) return;
+        // Prevent double initialization or initialization on unmounted component
+        if (!isMounted || mapInstance.current || !mapRef.current) return;
+
+        console.log('Initializing Yandex Map on container:', mapRef.current);
 
         const initialCoords = formData.latitude && formData.longitude 
           ? [Number(formData.latitude), Number(formData.longitude)]
           : [51.1694, 71.4491]; // Astana
 
         try {
+          // Clear container just in case (to avoid "Map already initialized on this element")
+          mapRef.current.innerHTML = '';
+          
           mapInstance.current = new window.ymaps.Map(mapRef.current, {
             center: initialCoords,
             zoom: 12,
             controls: ['zoomControl', 'fullscreenControl', 'searchControl']
           }, {
-            // Options to prevent "Suggest is not available" if the user's key doesn't support it
             searchControlNoSuggestPanel: true
           });
 
-          // Click handler to set coordinates AND address (reverse geocoding)
+          // Click handler
           mapInstance.current.events.add('click', (e) => {
             const coords = e.get('coords');
             updatePlacemark(coords);
             
-            // Reverse geocoding to get address from coordinates
             window.ymaps.geocode(coords).then((res) => {
               const firstGeoObject = res.geoObjects.get(0);
               const address = firstGeoObject ? firstGeoObject.getAddressLine() : '';
               
               setFormData(prev => ({
                 ...prev,
-                address: address, // Automatically fill address
+                address: address,
                 latitude: coords[0].toFixed(6),
                 longitude: coords[1].toFixed(6)
               }));
             });
           });
 
-          // Handle search results to pick coordinates
+          // Search control events
           const searchControl = mapInstance.current.controls.get('searchControl');
           searchControl.events.add('resultselect', (e) => {
             const index = e.get('index');
@@ -160,14 +167,13 @@ const AdminPanel = () => {
               updatePlacemark(coords);
               setFormData(prev => ({
                 ...prev,
-                address: address, // Update address from search
+                address: address,
                 latitude: coords[0].toFixed(6),
                 longitude: coords[1].toFixed(6)
               }));
             });
           });
 
-          // If editing and has coords, show placemark
           if (formData.latitude && formData.longitude) {
             updatePlacemark(initialCoords);
           }
@@ -178,7 +184,17 @@ const AdminPanel = () => {
         }
       });
     }
-  }, [isMapLoaded]);
+
+    return () => {
+      isMounted = false;
+      if (mapInstance.current) {
+        console.log('Destroying Yandex Map instance');
+        mapInstance.current.destroy();
+        mapInstance.current = null;
+        placemarkInstance.current = null;
+      }
+    };
+  }, [isMapLoaded, editMode]);
 
   const updatePlacemark = (coords) => {
     if (!window.ymaps || !mapInstance.current) return;
@@ -304,15 +320,23 @@ const AdminPanel = () => {
         data.append('existing_images', JSON.stringify(existingImages));
       }
 
-      const response = editMode
-        ? await axios.put(`${API_URL}/admin/services/${editingServiceId}`, data, {
+      const serviceId = formData.id || (editMode ? editingServiceId : null);
+      
+      if (serviceId) {
+        console.log('Updating existing service with ID:', serviceId);
+      } else {
+        console.log('Creating a new service (POST)');
+      }
+
+      const response = serviceId
+        ? await axios.put(`${API_URL}/admin/services/${serviceId}`, data, {
             headers: { 'Content-Type': 'multipart/form-data' }
           })
         : await axios.post(`${API_URL}/admin/services`, data, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
 
-      if (editMode) {
+      if (serviceId) {
         setServices((prev) => prev.map((item) => (item.id === response.data.id ? response.data : item)));
         setSuccessMessage('Услуга успешно обновлена.');
       } else {
@@ -330,6 +354,7 @@ const AdminPanel = () => {
     setEditMode(false);
     setEditingServiceId(null);
     setFormData({
+      id: null,
       title: '',
       description: '',
       short_description: '',
@@ -363,6 +388,7 @@ const AdminPanel = () => {
     setEditMode(true);
     setEditingServiceId(service.id);
     setFormData({
+      id: service.id,
       title: service.title,
       description: service.description,
       short_description: service.short_description || '',
@@ -414,203 +440,219 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="admin-page">
-      <div className="admin-panel-card">
-        <h1>Admin Panel</h1>
-        <p>Добавьте новый сервис и просмотрите существующие.</p>
+    <div className="admin-container">
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success-message">{successMessage}</div>}
 
-        {error && <div className="error-message">{error}</div>}
-        {successMessage && <div className="success-message">{successMessage}</div>}
-
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <div className="admin-row">
-            <label>Название</label>
-            <input name="title" value={formData.title} onChange={handleChange} required />
-          </div>
-
-          <div className="admin-row">
-            <label>Краткое описание</label>
-            <input name="short_description" value={formData.short_description} onChange={handleChange} />
-          </div>
-
-          <div className="admin-row">
-            <label>Полное описание</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="admin-row admin-row-grid">
-            <div>
-              <label>Цена</label>
-              <input name="price" type="number" value={formData.price} onChange={handleChange} required />
-            </div>
-            <div>
-              <label>Длительность (дни)</label>
-              <input name="duration" type="number" value={formData.duration} onChange={handleChange} />
-            </div>
-          </div>
-
-          <div className="admin-row admin-row-grid">
-            <div>
-              <label>Рейтинг (0–5)</label>
-              <input
-                name="rating"
-                type="number"
-                min="0"
-                max="5"
-                step="0.1"
-                value={formData.rating}
-                onChange={handleChange}
-                placeholder="4.5"
-              />
-            </div>
-            <div>
-              <label>Адрес (для отображения)</label>
-              <div className="address-search-group">
-                <input 
-                  name="address" 
-                  value={formData.address} 
-                  onChange={handleChange} 
-                  placeholder="г. Алматы, ул. Абая, 1"
-                />
-                <button type="button" className="btn-search-map" onClick={handleGeocode}>
-                  🔍 Найти
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-row">
-            <label>Местоположение на карте (кликните, чтобы выбрать)</label>
-            <div ref={mapRef} className="map-container">
-              {!isMapLoaded && <div className="map-loading">Загрузка карты...</div>}
-            </div>
-            {(formData.latitude || formData.longitude) && (
-              <div className="coords-display">
-                <span>Широта: <strong>{formData.latitude}</strong></span>
-                <span>Долгота: <strong>{formData.longitude}</strong></span>
-              </div>
-            )}
-          </div>
-
-          <div className="admin-row">
-            <label>Сайт услуги</label>
-            <input name="website" value={formData.website} onChange={handleChange} />
-          </div>
-
-          {/* ADVANTAGES SECTION */}
-          <div className="admin-row advantages-section">
-            <label>Преимущества</label>
-            {formData.advantages.map((adv, index) => (
-              <div key={index} className="advantage-input-group">
-                <input 
-                  value={adv} 
-                  onChange={(e) => handleAdvantageChange(index, e.target.value)} 
-                  placeholder="Например: Завтрак включен"
-                />
-                <button type="button" className="btn-remove-adv" onClick={() => removeAdvantage(index)}>×</button>
-              </div>
-            ))}
-            <button type="button" className="btn-add-adv" onClick={addAdvantage}>+ Добавить преимущество</button>
-          </div>
-
-          {/* IMAGE UPLOAD SECTION */}
-          <div className="admin-row image-upload-section">
-            <label>Изображения (макс. 5)</label>
-            <input 
-              type="file" 
-              multiple 
-              accept="image/*" 
-              onChange={handleFileChange} 
-              id="file-upload"
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="file-upload" className="btn btn-secondary upload-btn">
-              📁 Выбрать файлы
-            </label>
-
-            <div className="image-previews-grid">
-              {/* Existing Images */}
-              {existingImages.map((img, index) => (
-                <div key={`existing-${index}`} className="preview-item">
-                  <img src={`${IMAGE_BASE_URL}${img}`} alt="existing" />
-                  <button type="button" className="remove-preview" onClick={() => removeExistingImage(index)}>×</button>
-                </div>
-              ))}
-              
-              {/* New Previews */}
-              {previews.map((url, index) => (
-                <div key={`new-${index}`} className="preview-item">
-                  <img src={url} alt="preview" />
-                  <button type="button" className="remove-preview" onClick={() => removeNewImage(index)}>×</button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="admin-form-actions">
-            <button type="submit" className="btn btn-book">
-              {editMode ? 'Сохранить изменения' : 'Добавить сервис'}
-            </button>
-            {editMode && (
-              <button type="button" className="btn btn-cancel" onClick={resetForm}>
-                Отмена
-              </button>
-            )}
-          </div>
-        </form>
+      <div className="admin-header">
+        <h1>{t('admin')}</h1>
+        <button className="btn-add" onClick={() => setEditMode(true)}>
+          <Plus size={24} />
+          {t('addService')}
+        </button>
       </div>
 
-      <div className="admin-services-list">
-        <h2>Существующие услуги</h2>
-        <div className="admin-services-grid">
-          {services.map((service) => (
-            <div key={service.id} className="admin-service-card">
-              <div className="admin-service-images">
-                {service.images && service.images.length > 0 ? (
-                  <img src={`${IMAGE_BASE_URL}${service.images[0]}`} alt={service.title} className="admin-service-thumb" />
-                ) : (
-                  <div className="no-image-placeholder">Нет фото</div>
-                )}
-                {service.images && service.images.length > 1 && (
-                  <span className="image-count">+{service.images.length - 1}</span>
+      {editMode && (
+        <div className="edit-form-card">
+          <h2>{editingServiceId ? t('edit') : t('addService')}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>{t('title')}</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>{t('price')}</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>{t('duration')}</label>
+                <input
+                  type="number"
+                  name="duration"
+                  value={formData.duration}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>{t('rating')}</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  name="rating"
+                  value={formData.rating}
+                  onChange={handleChange}
+                />
+              </div>
+              
+              <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
+                <label>{t('shortDescription')}</label>
+                <textarea
+                  name="short_description"
+                  value={formData.short_description}
+                  onChange={handleChange}
+                  rows="2"
+                />
+              </div>
+
+              <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
+                <label>{t('description')}</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                  rows="4"
+                />
+              </div>
+
+              <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
+                <label>{t('location')}</label>
+                <div className="address-search-group">
+                  <input 
+                    name="address" 
+                    value={formData.address} 
+                    onChange={handleChange} 
+                    placeholder="г. Алматы, ул. Абая, 1"
+                  />
+                  <button type="button" className="btn-find" onClick={handleGeocode}>
+                    <Search size={18} /> {t('findOnMap')}
+                  </button>
+                </div>
+                <div ref={mapRef} className="admin-map-container">
+                  {!isMapLoaded && <div className="loading">{t('loading')}</div>}
+                </div>
+                {(formData.latitude || formData.longitude) && (
+                  <div style={{ marginTop: '10px', fontSize: '0.9rem', opacity: 0.8 }}>
+                    📍 {formData.latitude}, {formData.longitude}
+                  </div>
                 )}
               </div>
-              <div className="admin-service-content">
-                <div className="admin-service-top">
-                  <h3>{service.title}</h3>
-                  <span className="price-tag">${service.price}</span>
+
+              <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
+                <label>{t('images')}</label>
+                <div className="file-upload-wrapper">
+                  <input
+                    type="file"
+                    id="file-upload"
+                    className="file-input-hidden"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <label htmlFor="file-upload" className="file-upload-label">
+                    <Upload size={20} />
+                    <span>{selectedFiles.length > 0 ? `${t('selected')}: ${selectedFiles.length}` : t('chooseFiles')}</span>
+                  </label>
                 </div>
-                <p className="short-desc">{service.short_description || service.description.substring(0, 60) + '...'}</p>
-                <div className="admin-service-meta">
-                  <span>⏱ {service.duration || 1} дн</span>
-                  {service.address && <span title={service.address}>📍 {service.address.substring(0, 20)}...</span>}
-                  {service.latitude && service.longitude && (
-                    <button 
-                      type="button" 
-                      className="btn-open-map"
-                      onClick={() => window.open(`https://yandex.ru/maps/?pt=${service.longitude},${service.latitude}&z=16&l=map`, '_blank')}
-                    >
-                      🗺 Мап
-                    </button>
-                  )}
-                </div>
-                <div className="admin-service-actions">
-                  <button type="button" className="btn btn-edit" onClick={() => handleEdit(service)}>
-                    Редактировать
-                  </button>
-                  <button type="button" className="btn btn-delete" onClick={() => handleDelete(service.id)}>
-                    Удалить
-                  </button>
+
+                <div className="image-previews-grid">
+                  {existingImages.map((img, index) => (
+                    <div key={`existing-${index}`} className="preview-item">
+                      <img src={`${IMAGE_BASE_URL}${img}`} alt="existing" />
+                      <button 
+                        type="button" 
+                        className="remove-image-btn"
+                        onClick={() => removeExistingImage(index)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {previews.map((url, index) => (
+                    <div key={`new-${index}`} className="preview-item">
+                      <img src={url} alt="preview" />
+                      <button 
+                        type="button" 
+                        className="remove-image-btn"
+                        onClick={() => removeNewImage(index)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          ))}
+
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="btn-cancel" 
+                onClick={resetForm}
+              >
+                <X size={18} />
+                {t('cancel')}
+              </button>
+              <button type="submit" className="btn-save">
+                <Save size={18} />
+                {t('save')}
+              </button>
+            </div>
+          </form>
         </div>
+      )}
+
+      <div className="services-table-container">
+        <table className="services-table">
+          <thead>
+            <tr>
+              <th>{t('services')}</th>
+              <th>{t('price')}</th>
+              <th>{t('rating')}</th>
+              <th>{t('actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {services.map((service) => (
+              <tr key={service.id}>
+                <td>
+                  <div className="service-info-cell">
+                    {service.images && service.images.length > 0 && (
+                      <img 
+                        src={`${IMAGE_BASE_URL}${service.images[0]}`} 
+                        alt={service.title} 
+                        className="service-mini-img"
+                      />
+                    )}
+                    <div>
+                      <span className="service-name">{service.title}</span>
+                      <span className="service-id">ID: {service.id}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span className="tenge-icon-admin">₸</span>{service.price}</td>
+                <td>{service.rating}</td>
+                <td>
+                  <div className="actions-cell">
+                    <button className="btn-edit" onClick={() => handleEdit(service)}>
+                      <Edit2 size={16} /> {t('edit')}
+                    </button>
+                    <button className="btn-delete" onClick={() => handleDelete(service.id)}>
+                      <Trash2 size={16} /> {t('delete')}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

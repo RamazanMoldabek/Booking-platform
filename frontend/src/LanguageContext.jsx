@@ -1,0 +1,155 @@
+import React, { createContext, useState, useContext, useEffect } from 'react';
+
+const LanguageContext = createContext();
+
+export const translations = {
+  kk: {
+    services: 'Қызметтер',
+    about: 'Біз туралы',
+    myBookings: 'Менің брондауларым',
+    admin: 'Админ',
+    login: 'Кіру',
+    logout: 'Шығу',
+    register: 'Тіркелу',
+    heroTitle: 'Бізбен бірге тиімді, әрі тез саяхаттаңыз!',
+    heroSubtitle: 'Келесі кездесуді оңай брондаңыз. Бастау үшін төмендегі қызметтің бірін таңдаңыз.',
+    searchPlaceholder: 'Іздеу...',
+    sortBy: 'Сұрыптау',
+    minPrice: 'Мин. баға',
+    maxPrice: 'Макс. баға',
+    minRating: 'Мин. рейтинг',
+    viewDetails: 'Толығырақ',
+    duration: 'Ұзақтығы',
+    days: 'күн',
+    price: 'Бағасы',
+    rating: 'Рейтинг',
+    location: 'Орналасқан жері',
+    findOnMap: 'Картадан табу',
+    save: 'Сақтау',
+    edit: 'Өңдеу',
+    delete: 'Жою',
+    addService: 'Қызмет қосу',
+    bookingSuccess: 'Брондау сәтті аяқталды!',
+    payment: 'Төлем',
+    welcome: 'Қош келдіңіз',
+    actions: 'Әрекеттер',
+    title: 'Атауы',
+    shortDescription: 'Қысқаша сипаттама',
+    description: 'Сипаттама',
+    images: 'Суреттер',
+    chooseFiles: 'Файлдарды таңдаңыз',
+    selected: 'Таңдалды',
+    cancel: 'Болдырмау',
+    loading: 'Жүктелуде...',
+    existingServices: 'Бар қызметтер',
+    saveChanges: 'Өзгерістерді сақтау',
+    noImage: 'Сурет жоқ',
+    map: 'Карта',
+  },
+  ru: {
+    services: 'Услуги',
+    about: 'О нас',
+    myBookings: 'Мои бронирования',
+    admin: 'Админ',
+    login: 'Войти',
+    logout: 'Выйти',
+    register: 'Регистрация',
+    heroTitle: 'Путешествуйте выгодно и быстро вместе с нами!',
+    heroSubtitle: 'Забронируйте следующую встречу легко. Выберите одну из услуг ниже, чтобы начать.',
+    searchPlaceholder: 'Поиск...',
+    sortBy: 'Сортировка',
+    minPrice: 'Мин. цена',
+    maxPrice: 'Макс. цена',
+    minRating: 'Мин. рейтинг',
+    viewDetails: 'Подробнее',
+    duration: 'Длительность',
+    days: 'дн.',
+    price: 'Цена',
+    rating: 'Рейтинг',
+    location: 'Местоположение',
+    findOnMap: 'Найти на карте',
+    save: 'Сохранить',
+    edit: 'Редактировать',
+    delete: 'Удалить',
+    addService: 'Добавить услугу',
+    bookingSuccess: 'Бронирование успешно!',
+    payment: 'Оплата',
+    welcome: 'Добро пожаловать',
+    actions: 'Действия',
+    title: 'Название',
+    shortDescription: 'Краткое описание',
+    description: 'Описание',
+    images: 'Изображения',
+    chooseFiles: 'Выбрать файлы',
+    selected: 'Выбрано',
+    cancel: 'Отмена',
+    loading: 'Загрузка...',
+    existingServices: 'Существующие услуги',
+    saveChanges: 'Сохранить изменения',
+    noImage: 'Нет фото',
+    map: 'Карта',
+  },
+  en: {
+    services: 'Services',
+    about: 'About Us',
+    myBookings: 'My Bookings',
+    admin: 'Admin',
+    login: 'Login',
+    logout: 'Logout',
+    register: 'Register',
+    heroTitle: 'Travel efficiently and quickly with us!',
+    heroSubtitle: 'Book your next meeting easily. Choose one of the services below to get started.',
+    searchPlaceholder: 'Search...',
+    sortBy: 'Sort By',
+    minPrice: 'Min Price',
+    maxPrice: 'Max Price',
+    minRating: 'Min Rating',
+    viewDetails: 'View Details',
+    duration: 'Duration',
+    days: 'days',
+    price: 'Price',
+    rating: 'Rating',
+    location: 'Location',
+    findOnMap: 'Find on Map',
+    save: 'Save',
+    edit: 'Edit',
+    delete: 'Delete',
+    addService: 'Add Service',
+    bookingSuccess: 'Booking Successful!',
+    payment: 'Payment',
+    welcome: 'Welcome',
+    actions: 'Actions',
+    title: 'Title',
+    shortDescription: 'Short Description',
+    description: 'Description',
+    images: 'Images',
+    chooseFiles: 'Choose Files',
+    selected: 'Selected',
+    cancel: 'Cancel',
+    loading: 'Loading...',
+    existingServices: 'Existing Services',
+    saveChanges: 'Save Changes',
+    noImage: 'No Image',
+    map: 'Map',
+  }
+};
+
+export const LanguageProvider = ({ children }) => {
+  const [lang, setLang] = useState(() => localStorage.getItem('language') || 'kk');
+
+  useEffect(() => {
+    localStorage.setItem('language', lang);
+  }, [lang]);
+
+  const t = (key) => {
+    return translations[lang][key] || key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => useContext(LanguageContext);
