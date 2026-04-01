@@ -2,7 +2,12 @@ const db = require('../db');
 
 exports.getServices = async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM services ORDER BY id ASC');
+    const { rows } = await db.query(`
+      SELECT s.*, c.key as category_key 
+      FROM services s 
+      LEFT JOIN Categories c ON s.category_id = c.id 
+      ORDER BY s.id ASC
+    `);
     res.json(rows);
   } catch (err) {
     console.error('Error fetching services:', err);
@@ -13,7 +18,11 @@ exports.getServices = async (req, res) => {
 exports.getServiceById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { rows } = await db.query('SELECT * FROM services WHERE id = $1', [id]);
+    const { rows } = await db.query(`
+      SELECT s.*, c.key as category_key 
+      FROM services s 
+      LEFT JOIN Categories c ON s.category_id = c.id 
+      WHERE s.id = $1`, [id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Service not found' });
     }
