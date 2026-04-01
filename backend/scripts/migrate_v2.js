@@ -1,30 +1,26 @@
-const { Client } = require('pg');
-require('dotenv').config({ path: './backend/.env' });
+const { Pool } = require('pg');
+require('dotenv').config({ path: '../.env' });
 
-const client = new Client({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-async function migrate() {
+const migrationQuery = `
+  ALTER TABLE services
+  ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+  ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+`;
+
+async function runMigration() {
   try {
-    await client.connect();
-    console.log('Connected to DB');
-
-    const query = `
-      ALTER TABLE services 
-      ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}',
-      ADD COLUMN IF NOT EXISTS advantages JSONB DEFAULT '[]',
-      ADD COLUMN IF NOT EXISTS address TEXT;
-    `;
-
-    await client.query(query);
-    console.log('Migration successful: added columns images, advantages, address');
+    const res = await pool.query(migrationQuery);
+    console.log('Migration successful: added latitude and longitude columns.');
   } catch (err) {
     console.error('Migration failed:', err);
   } finally {
-    await client.end();
+    await pool.end();
   }
 }
 
-migrate();
+runMigration();

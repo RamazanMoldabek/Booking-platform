@@ -23,8 +23,8 @@ exports.createService = async (req, res) => {
 
     const serviceRating = rating ? Number(rating) : 4.5;
     const insertQuery = `
-      INSERT INTO services (title, description, short_description, price, duration, website, rating, images, address, advantages)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      INSERT INTO services (title, description, short_description, price, duration, website, rating, images, address, advantages, latitude, longitude)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `;
 
@@ -39,6 +39,8 @@ exports.createService = async (req, res) => {
       imageUrls,
       address ? address.trim() : null,
       JSON.stringify(parsedAdvantages),
+      req.body.latitude ? Number(req.body.latitude) : null,
+      req.body.longitude ? Number(req.body.longitude) : null,
     ];
 
     const { rows } = await db.query(insertQuery, values);
@@ -96,8 +98,10 @@ exports.updateService = async (req, res) => {
           rating = $7,
           images = $8,
           address = $9,
-          advantages = $10
-      WHERE id = $11
+          advantages = $10,
+          latitude = $11,
+          longitude = $12
+      WHERE id = $13
       RETURNING *
     `;
 
@@ -112,6 +116,8 @@ exports.updateService = async (req, res) => {
       finalImages,
       address ? address.trim() : null,
       JSON.stringify(parsedAdvantages),
+      req.body.latitude ? Number(req.body.latitude) : null,
+      req.body.longitude ? Number(req.body.longitude) : null,
       id,
     ];
 
