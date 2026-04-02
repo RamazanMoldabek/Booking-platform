@@ -43,7 +43,7 @@ const MyBookings = () => {
       // Refresh the list after deletion
       fetchBookings();
     } catch (err) {
-      alert(err.response?.data?.error || t('cancelBooking') + ' failed.');
+      alert(err.response?.data?.error ? t(err.response.data.error) : t('cancelBooking') + ' failed.');
     }
   };
 

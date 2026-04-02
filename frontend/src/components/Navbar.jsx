@@ -7,7 +7,6 @@ import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon, Menu, X, ShieldUse
 import { useAuth } from '../AuthContext';
 import { useLanguage } from '../LanguageContext';
 import './Navbar.css';
-import logo from '../assets/Booking.png';
 
 const Navbar = ({ theme, toggleTheme }) => {
   const location = useLocation();
@@ -32,7 +31,6 @@ const Navbar = ({ theme, toggleTheme }) => {
       <div className="navbar-container">
         {/* Logo Section */}
         <Link to="/" className="navbar-logo">
-          <img src={logo} alt="Logo" className="logo-icon" />
           <span className="logo-text">BookingPro</span>
         </Link>
 
@@ -59,7 +57,7 @@ const Navbar = ({ theme, toggleTheme }) => {
               <span>{t('admin')}</span>
             </Link>
           )}
-          
+
           {/* Mobile-only actions (moved here inside menu) */}
           <div className="mobile-only-actions">
             {/* <div className="nav-login-wrapper">
@@ -79,9 +77,9 @@ const Navbar = ({ theme, toggleTheme }) => {
         {/* Actions Section (Right - Hidden on Mobile) */}
         <div className="navbar-actions">
           {/* Language Selector */}
-          <select 
-            className="lang-selector" 
-            value={lang} 
+          <select
+            className="lang-selector"
+            value={lang}
             onChange={(e) => setLang(e.target.value)}
           >
             <option value="kk">ҚАЗ</option>

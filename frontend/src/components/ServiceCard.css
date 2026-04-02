@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: var(--transition-base);
   overflow: hidden;
 }
 
 .service-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .service-card-image {
@@ -19,12 +20,12 @@
 .service-card-image img {
   width: 100%;
   height: 100%;
-  object-fit: crop;
-  transition: transform 0.5s ease;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .service-card:hover .service-card-image img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .service-card-body {
@@ -149,6 +150,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px !important;
+  padding: 10px 20px !important;
   font-size: 0.85rem !important;
+  transition: var(--transition-bounce);
+}
+
+.btn-book:active {
+  transform: translateY(-1px) scale(0.95);
+  box-shadow: var(--shadow-sm);
 }

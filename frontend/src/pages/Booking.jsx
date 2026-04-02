@@ -60,7 +60,7 @@ const Booking = () => {
       navigate(`/payment/${response.data.id}`);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+        setError(t(err.response.data.error));
       } else {
         setError(t('bookingFailed') || 'Failed to create booking.');
       }

@@ -33,7 +33,7 @@ const Login = () => {
       await login({ email: formData.email.trim(), password: formData.password });
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || t('loginFailed'));
+      setError(err.response?.data?.error ? t(err.response.data.error) : t('loginFailed'));
     } finally {
       setSubmitting(false);
     }

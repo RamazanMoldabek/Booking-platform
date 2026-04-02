@@ -58,9 +58,9 @@ const Payment = () => {
       }, 2000);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+        setError(t(err.response.data.error));
       } else {
-        setError('Payment processing failed. Please try again.');
+        setError(t('Payment processing failed. Please try again.'));
       }
     } finally {
       setLoading(false);

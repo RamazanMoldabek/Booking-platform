@@ -80,35 +80,7 @@ const AdminPanel = () => {
     fetchCategories();
     fetchServices();
 
-    // Singleton-like Yandex Maps loader
-    const scriptId = 'yandex-maps-api-script';
-    const apiKey = 'ff8fb748-4eb6-45be-9b9c-f4c788a60db2';
-    const expectedSrc = `https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=${apiKey}`;
-    
-    const onScriptLoad = () => {
-      if (window.ymaps) {
-        window.ymaps.ready(() => setIsMapLoaded(true));
-      }
-    };
-
-    if (!window.ymaps) {
-      let script = document.getElementById(scriptId);
-      if (!script) {
-        // Double check for any other yandex scripts that might have been added without our ID
-        const otherScripts = document.querySelectorAll('script[src*="api-maps.yandex.ru"]');
-        otherScripts.forEach(s => s.remove());
-
-        script = document.createElement('script');
-        script.id = scriptId;
-        script.src = expectedSrc;
-        script.type = 'text/javascript';
-        script.async = true;
-        script.addEventListener('load', onScriptLoad);
-        document.head.appendChild(script);
-      } else {
-        script.addEventListener('load', onScriptLoad);
-      }
-    } else {
+    if (window.ymaps) {
       window.ymaps.ready(() => setIsMapLoaded(true));
     }
 
@@ -337,7 +309,7 @@ const AdminPanel = () => {
 
       resetForm();
     } catch (err) {
-      setError(err.response?.data?.error || t('errorSavingService'));
+      setError(err.response?.data?.error ? t(err.response.data.error) : t('errorSavingService'));
     }
   };
 
@@ -428,7 +400,7 @@ const AdminPanel = () => {
         resetForm();
       }
     } catch (err) {
-      setError(err.response?.data?.error || t('delete') + ' failed.');
+      setError(err.response?.data?.error ? t(err.response.data.error) : t('delete') + ' failed.');
     }
   };
 
@@ -546,6 +518,7 @@ const AdminPanel = () => {
                     name="address" 
                     value={formData.address} 
                     onChange={handleChange} 
+                    onBlur={handleGeocode}
                     placeholder="Almaty, Abay Ave, 1"
                   />
                   <button type="button" className="btn-find" onClick={handleGeocode}>

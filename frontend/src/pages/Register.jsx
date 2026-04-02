@@ -37,7 +37,7 @@ const Register = () => {
       });
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || t('registerFailed'));
+      setError(err.response?.data?.error ? t(err.response.data.error) : t('registerFailed'));
     } finally {
       setSubmitting(false);
     }

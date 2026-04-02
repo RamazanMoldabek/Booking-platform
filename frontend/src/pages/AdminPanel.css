@@ -9,9 +9,14 @@
   margin-bottom: 2rem;
   background: var(--surface);
   padding: 2.5rem;
-  border-radius: 20px;
+  border-radius: 24px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
+}
+
+.admin-header:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .admin-header h1 {
@@ -23,23 +28,30 @@
 
 /* BIGGER ADD SERVICE BUTTON */
 .btn-add {
-  background-color: var(--primary-color);
+  background-color: var(--button-bg);
   color: white;
-  padding: 1rem 2.5rem; /* Increased size */
+  padding: 1rem 2.5rem;
+  /* Increased size */
   border-radius: 14px;
   font-weight: 700;
   font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 25px rgba(0, 174, 240, 0.25);
+  transition: var(--transition-bounce);
+  box-shadow: var(--shadow-md);
+  border: none;
 }
 
 .btn-add:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
   filter: brightness(1.1);
-  box-shadow: 0 15px 35px rgba(0, 174, 240, 0.35);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.btn-add:active {
+  transform: translateY(-2px) scale(0.97);
+  box-shadow: var(--shadow-sm);
 }
 
 /* BEAUTIFUL INPUT FIELDS */
@@ -73,10 +85,11 @@
   opacity: 0.9;
 }
 
-.form-group input, 
-.form-group textarea, 
+.form-group input,
+.form-group textarea,
 .form-group select {
-  background-color: var(--bg); /* Darker than card for depth */
+  background-color: var(--bg);
+  /* Darker than card for depth */
   border: 1.5px solid var(--border-color);
   border-radius: 14px;
   padding: 1rem 1.25rem;
@@ -86,7 +99,7 @@
   outline: none;
 }
 
-.form-group input:focus, 
+.form-group input:focus,
 .form-group textarea:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 4px rgba(0, 174, 240, 0.15);
@@ -216,7 +229,7 @@
 }
 
 .btn-save {
-  background-color: var(--success);
+  background-color: var(--button-bg);
   color: white;
   padding: 1rem 3rem;
   border-radius: 12px;
@@ -224,17 +237,22 @@
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-bounce);
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-save:hover {
   filter: brightness(1.1);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.3);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.btn-save:active {
+  transform: translateY(-1px) scale(0.97);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-cancel {
@@ -246,7 +264,7 @@
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -255,21 +273,30 @@
 .btn-cancel:hover {
   background-color: var(--border-color);
   color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-cancel:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
 }
 
 .actions-cell {
   display: flex !important;
-  gap: 15px !important; /* Increased distance */
+  gap: 15px !important;
+  /* Increased distance */
   align-items: center;
 }
 
-.btn-edit, .btn-delete {
+.btn-edit,
+.btn-delete {
   padding: 0.6rem 1.2rem;
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-bounce);
   border: 1.5px solid transparent;
 }
 
@@ -283,7 +310,13 @@
 .btn-edit:hover {
   background: var(--success);
   color: white;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);
+}
+
+.btn-edit:active {
+  transform: translateY(-1px) scale(0.95);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
 }
 
 /* DELETE BUTTON: Theme-aware */
@@ -296,7 +329,13 @@
 .btn-delete:hover {
   background: var(--danger);
   color: white;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:active {
+  transform: translateY(-1px) scale(0.95);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
 }
 
 .tenge-icon-admin {
@@ -306,8 +345,15 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ADVANTAGES MANAGER STYLES */
@@ -376,8 +422,15 @@
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* YANDEX MAP & SEARCH */
@@ -392,7 +445,7 @@
 }
 
 .btn-find {
-  background-color: var(--primary-color);
+  background-color: var(--button-bg);
   color: white;
   border: none;
   padding: 0 24px;
@@ -402,14 +455,20 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 174, 240, 0.2);
+  transition: var(--transition-bounce);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-find:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 174, 240, 0.3);
+  filter: brightness(1.15);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+}
+
+.btn-find:active {
+  transform: translateY(-1px) scale(0.96);
+  box-shadow: var(--shadow-sm);
+  filter: brightness(0.95);
 }
 
 .admin-map-container {
@@ -443,8 +502,10 @@
   width: 100px;
   height: 100px;
   border-radius: 12px;
-  overflow: visible; /* To show the floating 'x' */
-  border: 22px solid var(--border-color); /* Subtle frame */
+  overflow: visible;
+  /* To show the floating 'x' */
+  border: 22px solid var(--border-color);
+  /* Subtle frame */
   border: none;
 }
 
@@ -528,13 +589,14 @@
     margin-top: 2rem;
   }
 
-  .btn-save, .btn-cancel {
+  .btn-save,
+  .btn-cancel {
     width: 100%;
     justify-content: center;
     padding: 0.8rem;
   }
 
-  .services-table th, 
+  .services-table th,
   .services-table td {
     padding: 0.75rem;
     font-size: 0.8rem;
@@ -550,7 +612,8 @@
     gap: 8px !important;
   }
 
-  .btn-edit, .btn-delete {
+  .btn-edit,
+  .btn-delete {
     width: 100%;
     text-align: center;
     padding: 0.5rem;
