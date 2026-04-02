@@ -1,14 +1,14 @@
-// frontend/src/pages/Payment.jsx
-// Страница оплаты. Загружает данные брони и отправляет платеж на бэкенд.
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CreditCard, CheckCircle } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
 import './Payment.css';
 
 const Payment = () => {
+  const { t } = useLanguage();
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -25,14 +25,14 @@ const Payment = () => {
         const res = await axios.get(`${API_URL}/bookings/${bookingId}`);
         setBookingData(res.data);
       } catch (err) {
-        setError('Failed to load booking details.');
+        setError(t('errorLoadingService'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooking();
-  }, [bookingId]);
+  }, [bookingId, t]);
 
   useEffect(() => {
     if (!user) {
@@ -72,20 +72,20 @@ const Payment = () => {
       <div className="payment-container animate-fade-in">
         <div className="card success-card text-center">
           <CheckCircle className="success-icon" size={64} />
-          <h2>Payment Successful!</h2>
-          <p>Your booking has been confirmed.</p>
-          <p className="redirect-text">Redirecting to your bookings...</p>
+          <h2>{t('paymentSuccess')}</h2>
+          <p>{t('bookingSuccess')}</p>
+          <p className="redirect-text">{t('redirecting')}</p>
         </div>
       </div>
     );
   }
 
   if (loading && !bookingData) {
-    return <div className="loading">Loading booking details...</div>;
+    return <div className="loading">{t('loading')}</div>;
   }
 
   if (!bookingData) {
-    return <div className="error-message">Booking not found or cannot load booking details.</div>;
+    return <div className="error-message">{t('bookingNotFound')}</div>;
   }
 
   return (
@@ -93,11 +93,11 @@ const Payment = () => {
       <div className="card payment-card">
         <div className="payment-header">
           <CreditCard size={32} className="payment-icon" />
-          <h2>Complete Payment</h2>
+          <h2>{t('completePayment')}</h2>
         </div>
         
         <p className="payment-desc">
-          You are about to pay <strong>${bookingData?.service_price}</strong> for Booking #{bookingId} ({bookingData?.service_title}).
+          {t('payNow')}: <strong>₸{bookingData?.service_price}</strong> {t('bookingFor')} #{bookingId} ({bookingData?.service_title}).
         </p>
 
         {error && <div className="error-message">{error}</div>}
@@ -109,7 +109,7 @@ const Payment = () => {
           </div>
           <div className="mock-card-number">**** **** **** 1234</div>
           <div className="mock-card-bottom">
-            <span>John Doe</span>
+            <span>Customer Name</span>
             <span>12/28</span>
           </div>
         </div>
@@ -119,7 +119,7 @@ const Payment = () => {
           disabled={loading}
           className="btn btn-payment"
         >
-          {loading ? 'Processing...' : 'Pay Now'}
+          {loading ? t('processing') : t('payNow')}
         </button>
       </div>
     </div>

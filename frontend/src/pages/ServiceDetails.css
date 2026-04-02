@@ -69,10 +69,17 @@
 .service-detail-card {
   display: grid;
   gap: 1rem;
-  padding: 1.5rem;
+  padding: 2rem;
   background: var(--card-bg);
-  border-radius: 20px;
+  border-radius: 24px;
   border: 1px solid var(--border-color);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.category-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
 }
 
 .service-detail-row {
@@ -81,6 +88,11 @@
   gap: 0.75rem;
   color: var(--text-primary);
   font-weight: 600;
+}
+
+.service-detail-row span {
+  font-size: 1rem;
+  color: var(--text-secondary);
 }
 
 .service-detail-link a {
@@ -169,15 +181,38 @@
 
 @media (max-width: 768px) {
   .service-detail-hero {
-    min-height: 320px;
+    min-height: 280px;
+    border-radius: 16px;
   }
 
   .service-detail-hero-overlay {
-    padding: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .service-detail-hero h1 {
+    font-size: 1.75rem;
   }
 
   .service-detail-body {
-    padding: 0 1rem;
+    padding: 0;
+  }
+
+  .service-detail-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .service-map-container {
+    height: 250px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .advantages-list {
+    grid-template-columns: 1fr;
   }
 }
 

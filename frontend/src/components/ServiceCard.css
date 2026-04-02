@@ -41,6 +41,18 @@
   margin-bottom: 12px;
 }
 
+.service-category-badge {
+  display: inline-block;
+  background: rgba(0, 174, 240, 0.1);
+  color: var(--primary-color);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  border: 1px solid rgba(0, 174, 240, 0.2);
+}
+
 .service-title {
   margin: 0;
   font-size: 1.25rem;

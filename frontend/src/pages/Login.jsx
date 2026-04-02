@@ -1,11 +1,11 @@
-// frontend/src/pages/Login.jsx
-// Страница логина. Показывает форму для входа и использует AuthContext для авторизации.
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import { useLanguage } from '../LanguageContext';
 import './Auth.css';
 
 const Login = () => {
+  const { t } = useLanguage();
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -23,7 +23,7 @@ const Login = () => {
     setError('');
 
     if (!formData.email || !formData.password) {
-      setError('Email және құпия сөз толтырылуы керек.');
+      setError(t('fieldsRequired'));
       return;
     }
 
@@ -33,7 +33,7 @@ const Login = () => {
       await login({ email: formData.email.trim(), password: formData.password });
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed.');
+      setError(err.response?.data?.error || t('loginFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -42,13 +42,13 @@ const Login = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Кіру</h2>
-        <p>Жеке кабинетке кіру үшін почта және құпия сөз енгізіңіз.</p>
+        <h2>{t('login')}</h2>
+        <p>{t('loginSubtitle')}</p>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label>Email</label>
+          <label>{t('email')}</label>
           <input
             type="email"
             value={formData.email}
@@ -56,21 +56,21 @@ const Login = () => {
             placeholder="you@example.com"
           />
 
-          <label>Құпия сөз</label>
+          <label>{t('password')}</label>
           <input
             type="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            placeholder="Құпия сөзіңіз"
+            placeholder="******"
           />
 
           <button type="submit" className="btn" disabled={submitting}>
-            {submitting ? 'Күте тұрыңыз...' : 'Кіру'}
+            {submitting ? t('pleaseWait') : t('login')}
           </button>
         </form>
 
         <p className="auth-footer">
-          Жаңа қолданушысыз? <Link to="/register">Тіркелу</Link>
+          {t('newToSite')} <Link to="/register">{t('register')}</Link>
         </p>
       </div>
     </div>

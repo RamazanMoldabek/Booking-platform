@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Clock, Globe, ExternalLink, ArrowRight, MapPin } from 'lucide-react';
+import { Clock, Globe, ExternalLink, ArrowRight, MapPin, Tag } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
@@ -21,6 +21,7 @@ const ServiceDetails = () => {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categoryName, setCategoryName] = useState(''); // State for category name
   const [activeImage, setActiveImage] = useState(0);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const mapRef = useRef(null);
@@ -30,9 +31,13 @@ const ServiceDetails = () => {
     const fetchService = async () => {
       try {
         const response = await axios.get(`${API_URL}/services/${serviceId}`);
-        setService(response.data);
+        const data = response.data;
+        setService(data);
+        if (data.category_key) {
+          setCategoryName(t(data.category_key));
+        }
       } catch (err) {
-        setError('Бұл қызмет табылған жоқ немесе сервер жауабы жоқ.');
+        setError(t('errorLoadingService'));
       } finally {
         setLoading(false);
       }
@@ -78,7 +83,7 @@ const ServiceDetails = () => {
         mapInstance.current = null;
       }
     };
-  }, [serviceId]);
+  }, [serviceId, t]);
 
   // Initialize Map
   useEffect(() => {
@@ -111,11 +116,11 @@ const ServiceDetails = () => {
   }, [isMapLoaded, service]);
 
   if (loading) {
-    return <div className="loading">Жүктелуде...</div>;
+    return <div className="loading">{t('loading')}</div>;
   }
 
   if (error || !service) {
-    return <div className="error-message">{error || 'Service not found.'}</div>;
+    return <div className="error-message">{error || t('serviceNotFound')}</div>;
   }
 
   const images = (service.images && service.images.length > 0) ? service.images : [placeholderImage];
@@ -136,7 +141,7 @@ const ServiceDetails = () => {
         style={{ backgroundImage: `url(${images[activeImage].startsWith('http') ? images[activeImage] : IMAGE_BASE_URL + images[activeImage]})` }}
       >
         <div className="service-detail-hero-overlay">
-          <div className="service-detail-badge">Сервис</div>
+          <div className="service-detail-badge">{categoryName || t('category')}</div>
           <h1>{title}</h1>
           <p>{shortDescription}</p>
         </div>
@@ -147,7 +152,7 @@ const ServiceDetails = () => {
           {/* Gallery Section */}
           {images.length > 1 && (
             <div className="service-gallery">
-              <h3>Галерея</h3>
+              <h3>{t('images')}</h3>
               <div className="gallery-grid">
                 {images.map((img, index) => (
                   <div 
@@ -163,22 +168,20 @@ const ServiceDetails = () => {
           )}
 
           <div className="service-detail-card">
+            <div className="service-detail-row category-row">
+              <Tag size={18} />
+              <span>{t('category')}: <strong>{categoryName}</strong></span>
+            </div>
             <div className="info-grid">
               <div className="info-item">
-                <div className="info-icon-wrapper">
-                  <span className="tenge-icon">₸</span>
-                </div>
                 <div className="info-text">
-                  <label>{t('price')}</label>
+                  <label>₸ {t('price')}: </label>
                   <span>{service.price}</span>
                 </div>
               </div>
               <div className="info-item">
-                <div className="info-icon-wrapper">
-                  <Clock size={20} />
-                </div>
                 <div className="info-text">
-                  <label>{t('duration')}</label>
+                  <label><Clock size={15}/> {t('duration')}</label>
                   <span>{service.duration || 1} {t('days')}</span>
                 </div>
               </div>
@@ -186,24 +189,24 @@ const ServiceDetails = () => {
             {service.address && (
               <div className="service-detail-row">
                 <MapPin size={18} />
-                <span>Мекен-жайы: {service.address}</span>
+                <span>{service.address}</span>
               </div>
             )}
             <div className="service-detail-row service-detail-link">
               <Globe size={18} />
               <a href={websiteUrl} target="_blank" rel="noreferrer">
-                Нақты сайтқа өту <ExternalLink size={14} />
+                {t('viewDetails')} <ExternalLink size={14} />
               </a>
             </div>
           </div>
 
           <div className="service-detail-copy">
-            <h2>Қызмет туралы</h2>
+            <h2>{t('description')}</h2>
             <p>{service.description}</p>
             
             {advantages.length > 0 && (
               <>
-                <h3>Негізгі артықшылықтары</h3>
+                <h3>{t('advantages')}</h3>
                 <ul className="advantages-list">
                   {advantages.map((adv, index) => (
                     <li key={index}>{adv}</li>
@@ -216,27 +219,27 @@ const ServiceDetails = () => {
           <div className="service-detail-actions">
             {user ? (
               <Link to={`/book/${service.id}`} className="btn btn-book">
-                Бронировать сейчас <ArrowRight size={16} />
+                {t('bookNow')} <ArrowRight size={16} />
               </Link>
             ) : (
               <Link to="/login" className="btn btn-book">
-                Кіру арқылы брондау <ArrowRight size={16} />
+                {t('login')} & {t('bookNow')} <ArrowRight size={16} />
               </Link>
             )}
           </div>
 
           {service.latitude && service.longitude && (
             <div className="service-map-section">
-              <h3>Бұл қай жерде орналасқан? 🗺</h3>
+              <h3>{t('location')}🗺</h3>
               <div ref={mapRef} className="service-map-container">
-                {!isMapLoaded && <div className="map-loading">Карта жүктелуде...</div>}
+                {!isMapLoaded && <div className="map-loading">{t('loading')}</div>}
               </div>
               <button 
                 type="button" 
                 className="btn-external-map"
                 onClick={() => window.open(`https://yandex.ru/maps/?pt=${service.longitude},${service.latitude}&z=16&l=map`, '_blank')}
               >
-                Яндекс Картадан ашу
+                {t('findOnMap')}
               </button>
             </div>
           )}

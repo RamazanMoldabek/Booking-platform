@@ -64,6 +64,11 @@ const ServiceCard = ({ service }) => {
       <div className="service-card-body">
         <div className="service-card-header">
           <div>
+            {service.category_key && (
+              <div className="service-category-badge">
+                {t(service.category_key)}
+              </div>
+            )}
             <h3 className="service-title">{service.title}</h3>
             {rating && (
               <div className="service-rating">

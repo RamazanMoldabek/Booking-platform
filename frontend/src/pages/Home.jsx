@@ -17,6 +17,9 @@ const Home = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [minRating, setMinRating] = useState('');
 
+  const [categories, setCategories] = useState([]); // New state for categories
+  const [selectedCategory, setSelectedCategory] = useState(''); // New state for selected category
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -24,17 +27,26 @@ const Home = () => {
         setServices(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Қызметтерді жүктеу сәтсіз аяқталды:', err);
-        setError('Қызметтерді жүктеу сәтсіз аяқталды. Техникалық ақау!');
+        setError(t('errorLoadingService'));
         setLoading(false);
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/categories`);
+        setCategories(response.data);
+      } catch (err) {
+        console.error('Failed to load categories:', err);
+      }
+    };
+
     fetchServices();
-  }, []);
+    fetchCategories();
+  }, [t]);
 
   const filteredServices = useMemo(() => {
-    return services
+    let filtered = services
       .filter((service) => {
         if (minPrice !== '' && Number(service.price) < Number(minPrice)) return false;
         if (maxPrice !== '' && Number(service.price) > Number(maxPrice)) return false;
@@ -42,6 +54,12 @@ const Home = () => {
         if (minRating !== '' && ratingValue < Number(minRating)) return false;
         return true;
       })
+
+    if (selectedCategory) {
+      filtered = filtered.filter(service => service.category_id === Number(selectedCategory));
+    }
+
+    return filtered
       .sort((a, b) => {
         if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
         if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
@@ -51,9 +69,9 @@ const Home = () => {
         if (sortBy === 'rating-asc') return aRating - bRating;
         return 0;
       });
-  }, [services, minPrice, maxPrice, minRating, sortBy]);
+  }, [services, minPrice, maxPrice, minRating, sortBy, selectedCategory]);
 
-  if (loading) return <div className="loading">Жүктелуде...</div>;
+  if (loading) return <div className="loading">{t('loading')}</div>;
 
   return (
     <div className="home-container">
@@ -72,6 +90,15 @@ const Home = () => {
             <option value="price-asc">↑ {t('price')}</option>
             <option value="price-desc">↓ {t('price')}</option>
             <option value="rating-desc">★ {t('rating')}</option>
+          </select>
+        </div>
+        <div className="filter-group">
+          <label>{t('category')}</label>
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+            <option value="">{t('allCategories')}</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{t(cat.key)}</option>
+            ))}
           </select>
         </div>
         <div className="filter-group">
@@ -123,7 +150,7 @@ const Home = () => {
           ))}
           {filteredServices.length === 0 && !error && (
             <div className="empty-state">
-              <p>No services available right now. Check back later!</p>
+              <p>{t('noServicesFound') || 'No services found.'}</p>
             </div>
           )}
         </div>

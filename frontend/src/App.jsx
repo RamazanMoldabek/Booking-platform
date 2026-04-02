@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { LanguageProvider } from './LanguageContext';
 import Home from './pages/Home';
 import Booking from './pages/Booking';
@@ -44,6 +45,7 @@ function App() {
               <Route path="/register" element={<Register />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </LanguageProvider>
     </Router>
@@ -51,4 +53,3 @@ function App() {
 }
 
 export default App;
-

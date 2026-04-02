@@ -3,7 +3,7 @@
 // Если пользователь админ, появляется ссылка на админ-панель.
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon } from 'lucide-react';
+import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon, Menu, X, ShieldUser } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { useLanguage } from '../LanguageContext';
 import './Navbar.css';
@@ -14,6 +14,13 @@ const Navbar = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  React.useEffect(() => {
+    setIsMenuOpen(false); // Close menu on page change
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -21,7 +28,7 @@ const Navbar = ({ theme, toggleTheme }) => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isMenuOpen ? 'menu-open' : ''}`}>
       <div className="navbar-container">
         {/* Logo Section */}
         <Link to="/" className="navbar-logo">
@@ -29,8 +36,13 @@ const Navbar = ({ theme, toggleTheme }) => {
           <span className="logo-text">BookingPro</span>
         </Link>
 
-        {/* Links Section (Centered) */}
-        <div className="navbar-links">
+        {/* Mobile Toggle Button */}
+        <button className="mobile-toggle" onClick={toggleMenu}>
+          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
+        {/* Links Section */}
+        <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
             <Home className="nav-icon" size={18} />
             <span>{t('services')}</span>
@@ -41,19 +53,30 @@ const Navbar = ({ theme, toggleTheme }) => {
               <span>{t('myBookings')}</span>
             </Link>
           )}
-          <Link to="/About us" className={`nav-link ${location.pathname === '/About us' ? 'active' : ''}`}>
-            <InfoIcon className="nav-icon" size={18} />
-            <span>{t('about')}</span>
-          </Link>
           {user && user.is_admin && (
             <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
-              <Settings className="nav-icon" size={18} />
+              <ShieldUser className="nav-icon" size={18} />
               <span>{t('admin')}</span>
             </Link>
           )}
+          
+          {/* Mobile-only actions (moved here inside menu) */}
+          <div className="mobile-only-actions">
+            {/* <div className="nav-login-wrapper">
+                {user ? (
+                <button type="button" className="nav-button logout-btn" onClick={handleLogout}>
+                    {t('logout')}
+                </button>
+                ) : (
+                <Link to="/login" className="nav-link login-link">
+                    <span>{t('login')}</span>
+                </Link>
+                )}
+            </div> */}
+          </div>
         </div>
 
-        {/* Actions Section (Right) */}
+        {/* Actions Section (Right - Hidden on Mobile) */}
         <div className="navbar-actions">
           {/* Language Selector */}
           <select 

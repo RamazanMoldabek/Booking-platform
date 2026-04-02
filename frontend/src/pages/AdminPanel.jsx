@@ -30,6 +30,7 @@ const AdminPanel = () => {
     address: '',
     advantages: [],
     latitude: '',
+    category_id: '',
     longitude: '',
   });
 
@@ -43,11 +44,19 @@ const AdminPanel = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState(null);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/categories`);
+      setCategories(response.data);
+    } catch (err) { console.error('Failed to load categories:', err); }
+  };
 
   const fetchServices = async () => {
     try {
@@ -68,6 +77,7 @@ const AdminPanel = () => {
       return;
     }
 
+    fetchCategories();
     fetchServices();
 
     // Singleton-like Yandex Maps loader
@@ -112,23 +122,19 @@ const AdminPanel = () => {
     };
   }, [user, navigate]);
 
-  // Handle Map Initialization with better robustness
+  // Handle Map Initialization
   useEffect(() => {
     let isMounted = true;
 
     if (isMapLoaded && mapRef.current && !mapInstance.current && window.ymaps) {
       window.ymaps.ready(() => {
-        // Prevent double initialization or initialization on unmounted component
         if (!isMounted || mapInstance.current || !mapRef.current) return;
-
-        console.log('Initializing Yandex Map on container:', mapRef.current);
 
         const initialCoords = formData.latitude && formData.longitude 
           ? [Number(formData.latitude), Number(formData.longitude)]
-          : [51.1694, 71.4491]; // Astana
+          : [51.1694, 71.4491]; // Default to Astana
 
         try {
-          // Clear container just in case (to avoid "Map already initialized on this element")
           mapRef.current.innerHTML = '';
           
           mapInstance.current = new window.ymaps.Map(mapRef.current, {
@@ -139,7 +145,6 @@ const AdminPanel = () => {
             searchControlNoSuggestPanel: true
           });
 
-          // Click handler
           mapInstance.current.events.add('click', (e) => {
             const coords = e.get('coords');
             updatePlacemark(coords);
@@ -157,7 +162,6 @@ const AdminPanel = () => {
             });
           });
 
-          // Search control events
           const searchControl = mapInstance.current.controls.get('searchControl');
           searchControl.events.add('resultselect', (e) => {
             const index = e.get('index');
@@ -177,8 +181,6 @@ const AdminPanel = () => {
           if (formData.latitude && formData.longitude) {
             updatePlacemark(initialCoords);
           }
-          
-          console.log('Yandex Map initialized successfully');
         } catch (err) {
           console.error('Error creating map instance:', err);
         }
@@ -188,13 +190,12 @@ const AdminPanel = () => {
     return () => {
       isMounted = false;
       if (mapInstance.current) {
-        console.log('Destroying Yandex Map instance');
         mapInstance.current.destroy();
         mapInstance.current = null;
         placemarkInstance.current = null;
       }
     };
-  }, [isMapLoaded, editMode]);
+  }, [isMapLoaded, formData.latitude, formData.longitude]);
 
   const updatePlacemark = (coords) => {
     if (!window.ymaps || !mapInstance.current) return;
@@ -203,7 +204,7 @@ const AdminPanel = () => {
       placemarkInstance.current.geometry.setCoordinates(coords);
     } else {
       placemarkInstance.current = new window.ymaps.Placemark(coords, {
-        balloonContent: 'Выбранное местоположение'
+        balloonContent: t('selectedLocation')
       }, {
         preset: 'islands#dotIcon',
         iconColor: '#ff4d4d'
@@ -229,13 +230,13 @@ const AdminPanel = () => {
             latitude: coords[0].toFixed(6),
             longitude: coords[1].toFixed(6)
           }));
-          setError(''); // Clear error if found
+          setError('');
         } else {
-          setError('Адрес не найден на карте.');
+          setError(t('addressNotFound'));
         }
       }).catch(err => {
         console.error('Geocoding error:', err);
-        setError('Ошибка при поиске адреса.');
+        setError(t('errorFindingAddress'));
       });
     });
   };
@@ -247,21 +248,18 @@ const AdminPanel = () => {
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     
-    // Validation: max 5 images total (new + existing)
     if (files.length + selectedFiles.length + existingImages.length > 5) {
-      setError('Максимум 5 изображений на сервис.');
+      setError(t('maxImagesError'));
       return;
     }
 
-    // Filter only jpg/png/webp
     const validFiles = files.filter(file => /\.(jpe?g|png|webp)$/i.test(file.name));
     if (validFiles.length !== files.length) {
-      setError('Допускаются только изображения (JPG, PNG, WEBP).');
+      setError(t('invalidFileTypeError'));
     }
 
     setSelectedFiles(prev => [...prev, ...validFiles]);
 
-    // Create previews
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
     setPreviews(prev => [...prev, ...newPreviews]);
   };
@@ -308,26 +306,19 @@ const AdminPanel = () => {
       data.append('address', formData.address);
       data.append('advantages', JSON.stringify(formData.advantages));
       data.append('latitude', formData.latitude);
+      data.append('category_id', formData.category_id);
       data.append('longitude', formData.longitude);
 
-      // Append new files
       selectedFiles.forEach(file => {
         data.append('images', file);
       });
 
-      // Append remaining existing images (for update)
       if (editMode) {
         data.append('existing_images', JSON.stringify(existingImages));
       }
 
       const serviceId = formData.id || (editMode ? editingServiceId : null);
       
-      if (serviceId) {
-        console.log('Updating existing service with ID:', serviceId);
-      } else {
-        console.log('Creating a new service (POST)');
-      }
-
       const response = serviceId
         ? await axios.put(`${API_URL}/admin/services/${serviceId}`, data, {
             headers: { 'Content-Type': 'multipart/form-data' }
@@ -338,15 +329,15 @@ const AdminPanel = () => {
 
       if (serviceId) {
         setServices((prev) => prev.map((item) => (item.id === response.data.id ? response.data : item)));
-        setSuccessMessage('Услуга успешно обновлена.');
+        setSuccessMessage(t('serviceUpdated'));
       } else {
         setServices((prev) => [...prev, response.data]);
-        setSuccessMessage('Услуга успешно добавлена.');
+        setSuccessMessage(t('serviceAdded'));
       }
 
       resetForm();
     } catch (err) {
-      setError(err.response?.data?.error || 'Ошибка при сохранении услуги.');
+      setError(err.response?.data?.error || t('errorSavingService'));
     }
   };
 
@@ -365,6 +356,7 @@ const AdminPanel = () => {
       address: '',
       advantages: [],
       latitude: '',
+      category_id: '',
       longitude: '',
     });
     
@@ -399,6 +391,7 @@ const AdminPanel = () => {
       address: service.address || '',
       advantages: Array.isArray(service.advantages) ? service.advantages : (typeof service.advantages === 'string' ? JSON.parse(service.advantages || '[]') : []),
       latitude: service.latitude?.toString() || '',
+      category_id: service.category_id?.toString() || '',
       longitude: service.longitude?.toString() || '',
     });
 
@@ -423,19 +416,19 @@ const AdminPanel = () => {
   };
 
   const handleDelete = async (serviceId) => {
-    if (!window.confirm('Удалить этот сервис?')) {
+    if (!window.confirm(t('confirmDelete'))) {
       return;
     }
 
     try {
       await axios.delete(`${API_URL}/admin/services/${serviceId}`);
       setServices((prev) => prev.filter((service) => service.id !== serviceId));
-      setSuccessMessage('Service deleted successfully.');
+      setSuccessMessage(t('delete') + ' success.');
       if (editMode && editingServiceId === serviceId) {
         resetForm();
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete service.');
+      setError(err.response?.data?.error || t('delete') + ' failed.');
     }
   };
 
@@ -478,14 +471,18 @@ const AdminPanel = () => {
                 />
               </div>
               <div className="form-group">
-                <label>{t('duration')}</label>
-                <input
-                  type="number"
-                  name="duration"
-                  value={formData.duration}
+                <label>{t('category')}</label>
+                <select
+                  name="category_id"
+                  value={formData.category_id}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">{t('selectCategory')}</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{t(cat.key)}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>{t('rating')}</label>
@@ -522,13 +519,34 @@ const AdminPanel = () => {
               </div>
 
               <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
+                <label>{t('advantages')}</label>
+                <div className="advantages-manager">
+                  {formData.advantages.map((adv, index) => (
+                    <div key={index} className="advantage-input-group">
+                      <input 
+                        value={adv} 
+                        onChange={(e) => handleAdvantageChange(index, e.target.value)} 
+                        placeholder={t('advantagePlaceholder')}
+                      />
+                      <button type="button" onClick={() => removeAdvantage(index)} className="btn-remove-adv">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" className="btn-add-adv" onClick={addAdvantage}>
+                    <Plus size={14} /> {t('addAdvantage')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
                 <label>{t('location')}</label>
                 <div className="address-search-group">
                   <input 
                     name="address" 
                     value={formData.address} 
                     onChange={handleChange} 
-                    placeholder="г. Алматы, ул. Абая, 1"
+                    placeholder="Almaty, Abay Ave, 1"
                   />
                   <button type="button" className="btn-find" onClick={handleGeocode}>
                     <Search size={18} /> {t('findOnMap')}
@@ -537,11 +555,6 @@ const AdminPanel = () => {
                 <div ref={mapRef} className="admin-map-container">
                   {!isMapLoaded && <div className="loading">{t('loading')}</div>}
                 </div>
-                {(formData.latitude || formData.longitude) && (
-                  <div style={{ marginTop: '10px', fontSize: '0.9rem', opacity: 0.8 }}>
-                    📍 {formData.latitude}, {formData.longitude}
-                  </div>
-                )}
               </div>
 
               <div className="form-group full-width" style={{ gridColumn: '1 / -1' }}>
@@ -613,7 +626,8 @@ const AdminPanel = () => {
         <table className="services-table">
           <thead>
             <tr>
-              <th>{t('services')}</th>
+              <th>{t('title')}</th>
+              <th>{t('category')}</th>
               <th>{t('price')}</th>
               <th>{t('rating')}</th>
               <th>{t('actions')}</th>
@@ -637,7 +651,8 @@ const AdminPanel = () => {
                     </div>
                   </div>
                 </td>
-                <td><span className="tenge-icon-admin">₸</span>{service.price}</td>
+                <td>{categories.find(c => c.id === service.category_id) ? t(categories.find(c => c.id === service.category_id).key) : '—'}</td>
+                <td>₸{service.price}</td>
                 <td>{service.rating}</td>
                 <td>
                   <div className="actions-cell">
