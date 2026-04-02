@@ -23,8 +23,8 @@ exports.createBooking = async (req, res) => {
     const { rows: existing } = await db.query(checkQuery, [service_id, booking_date]);
 
     if (existing.length > 0) {
-      return res.status(400).json({ 
-        error: 'Slot is already booked. Please choose another time or service.' 
+      return res.status(400).json({
+        error: 'Бұл уақытты басқа біреу алған. Басқа уақытты немесе басқа қызметті таңдаңыз.'
       });
     }
 
@@ -126,15 +126,15 @@ exports.cancelBooking = async (req, res) => {
     const { rows: updateRows } = await db.query(updateQuery, [id, user.id]);
 
     console.log(`Booking ID ${id} cancelled by user ${user.id} at ${new Date().toISOString()}.`);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       message: 'Booking cancelled successfully',
       booking: updateRows[0]
     });
   } catch (err) {
     console.error('Error cancelling booking:', err);
-    
+
     // Fallback if cancelled_at column doesn't exist yet
     if (err.code === '42703') { // undefined_column
       try {
@@ -145,8 +145,8 @@ exports.cancelBooking = async (req, res) => {
           RETURNING *
         `;
         const { rows: fallbackRows } = await db.query(fallbackQuery, [id, user.id]);
-        return res.json({ 
-          success: true, 
+        return res.json({
+          success: true,
           message: 'Booking cancelled successfully (without timestamp)',
           booking: fallbackRows[0]
         });
@@ -154,7 +154,7 @@ exports.cancelBooking = async (req, res) => {
         console.error('Fallback cancellation failed:', fallbackErr);
       }
     }
-    
+
     res.status(500).json({ error: 'Internal server error while cancelling booking.' });
   }
 };
