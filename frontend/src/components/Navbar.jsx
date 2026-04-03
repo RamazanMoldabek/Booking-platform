@@ -60,7 +60,7 @@ const Navbar = ({ theme, toggleTheme }) => {
 
           {/* Mobile-only actions (moved here inside menu) */}
           <div className="mobile-only-actions">
-            {/* <div className="nav-login-wrapper">
+            <div className="nav-login-wrapper">
                 {user ? (
                 <button type="button" className="nav-button logout-btn" onClick={handleLogout}>
                     {t('logout')}
@@ -70,7 +70,7 @@ const Navbar = ({ theme, toggleTheme }) => {
                     <span>{t('login')}</span>
                 </Link>
                 )}
-            </div> */}
+            </div>
           </div>
         </div>
 
@@ -90,18 +90,6 @@ const Navbar = ({ theme, toggleTheme }) => {
           <button type="button" className="nav-button theme-toggle" onClick={toggleTheme}>
             {theme === 'dark' ? <SunMedium size={16} /> : <Moon size={16} />}
           </button>
-
-          {user ? (
-            <button type="button" className="nav-button logout-btn" onClick={handleLogout}>
-              {t('logout')}
-            </button>
-          ) : (
-            <div className="nav-loginBtn">
-              <Link to="/login" className="nav-link login-link">
-                <span>{t('login')}</span>
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </nav>
