@@ -8,10 +8,10 @@ exports.createService = async (req, res) => {
       return res.status(400).json({ error: 'Title, description, and price are required.' });
     }
 
-    // Handle multiple image uploads
+    
     const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    // Parse advantages if sent as string (FormData)
+    
     let parsedAdvantages = [];
     if (advantages) {
       try {
@@ -61,10 +61,10 @@ exports.updateService = async (req, res) => {
       return res.status(400).json({ error: 'Title, description, and price are required.' });
     }
 
-    // Handle new images
+    
     const newImageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
     
-    // Handle existing images (sent as JSON string from FormData)
+    
     let finalImages = [];
     if (existing_images) {
       try {
@@ -74,10 +74,10 @@ exports.updateService = async (req, res) => {
       }
     }
     
-    // Combine existing (retained) images and new uploads
+    
     finalImages = [...finalImages, ...newImageUrls];
 
-    // Parse advantages
+    
     let parsedAdvantages = [];
     if (advantages) {
       try {
@@ -140,7 +140,7 @@ exports.deleteService = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // 1. Check if there are any bookings for this service
+    
     const checkQuery = 'SELECT COUNT(*) FROM bookings WHERE service_id = $1';
     const { rows: checkRows } = await db.query(checkQuery, [id]);
     const bookingCount = parseInt(checkRows[0].count, 10);
@@ -151,7 +151,7 @@ exports.deleteService = async (req, res) => {
       });
     }
 
-    // 2. If no bookings, proceed to delete
+    
     const deleteQuery = 'DELETE FROM services WHERE id = $1 RETURNING *';
     const { rows: deleteRows } = await db.query(deleteQuery, [id]);
 

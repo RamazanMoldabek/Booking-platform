@@ -1,6 +1,6 @@
-// frontend/src/components/Navbar.jsx
-// Навигационная панель сайта. Показывает ссылки в зависимости от авторизации пользователя.
-// Если пользователь админ, появляется ссылка на админ-панель.
+
+
+
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, Home, InfoIcon, Settings, SunMedium, Moon, Menu, X, ShieldUser } from 'lucide-react';
@@ -18,7 +18,7 @@ const Navbar = ({ theme, toggleTheme }) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   React.useEffect(() => {
-    setIsMenuOpen(false); // Close menu on page change
+    setIsMenuOpen(false); 
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -29,17 +29,17 @@ const Navbar = ({ theme, toggleTheme }) => {
   return (
     <nav className={`navbar ${isMenuOpen ? 'menu-open' : ''}`}>
       <div className="navbar-container">
-        {/* Logo Section */}
+        
         <Link to="/" className="navbar-logo">
           <span className="logo-text">BookingPro</span>
         </Link>
 
-        {/* Mobile Toggle Button */}
+        
         <button className="mobile-toggle" onClick={toggleMenu}>
           {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        {/* Links Section */}
+        
         <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
             <Home className="nav-icon" size={18} />
@@ -58,7 +58,7 @@ const Navbar = ({ theme, toggleTheme }) => {
             </Link>
           )}
 
-          {/* Mobile-only actions (moved here inside menu) */}
+          
           <div className="mobile-only-actions">
             <div className="nav-login-wrapper">
                 {user ? (
@@ -74,9 +74,9 @@ const Navbar = ({ theme, toggleTheme }) => {
           </div>
         </div>
 
-        {/* Actions Section (Right - Hidden on Mobile) */}
+        
         <div className="navbar-actions">
-          {/* Language Selector */}
+          
           <select
             className="lang-selector"
             value={lang}

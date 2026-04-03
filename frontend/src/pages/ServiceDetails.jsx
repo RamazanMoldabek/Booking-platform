@@ -1,6 +1,6 @@
-// frontend/src/pages/ServiceDetails.jsx
-// Страница детали услуги. Показывает подробную информацию, фото и кнопку бронирования.
-// Если пользователь не в системе, предлагает перейти на страницу логина.
+
+
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -21,7 +21,7 @@ const ServiceDetails = () => {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categoryName, setCategoryName] = useState(''); // State for category name
+  const [categoryName, setCategoryName] = useState(''); 
   const [activeImage, setActiveImage] = useState(0);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const mapRef = useRef(null);
@@ -45,7 +45,7 @@ const ServiceDetails = () => {
 
     fetchService();
 
-    // Singleton-like Yandex Maps loader
+    
     const scriptId = 'yandex-maps-api-script';
     const apiKey = 'ff8fb748-4eb6-45be-9b9c-f4c788a60db2';
     const expectedSrc = `https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=${apiKey}`;
@@ -59,7 +59,7 @@ const ServiceDetails = () => {
     if (!window.ymaps) {
       let script = document.getElementById(scriptId);
       if (!script) {
-        // Double check for any other yandex scripts that might have been added without our ID
+        
         const otherScripts = document.querySelectorAll('script[src*="api-maps.yandex.ru"]');
         otherScripts.forEach(s => s.remove());
 
@@ -85,7 +85,7 @@ const ServiceDetails = () => {
     };
   }, [serviceId, t]);
 
-  // Initialize Map
+  
   useEffect(() => {
     if (isMapLoaded && mapRef.current && service && service.latitude && service.longitude && !mapInstance.current && window.ymaps) {
       window.ymaps.ready(() => {
@@ -128,14 +128,14 @@ const ServiceDetails = () => {
   const title = service.title || service.name;
   const shortDescription = service.short_description || service.description;
   
-  // Parse advantages
+  
   const advantages = Array.isArray(service.advantages) 
     ? service.advantages 
     : (typeof service.advantages === 'string' ? JSON.parse(service.advantages || '[]') : []);
 
   return (
     <div className="service-detail-page">
-      {/* Hero Section with Active Image */}
+      
       <div
         className="service-detail-hero"
         style={{ backgroundImage: `url(${images[activeImage].startsWith('http') ? images[activeImage] : IMAGE_BASE_URL + images[activeImage]})` }}
@@ -149,7 +149,7 @@ const ServiceDetails = () => {
 
       <div className="service-detail-body">
         <div className="service-detail-info">
-          {/* Gallery Section */}
+          
           {images.length > 1 && (
             <div className="service-gallery">
               <h3>{t('images')}</h3>

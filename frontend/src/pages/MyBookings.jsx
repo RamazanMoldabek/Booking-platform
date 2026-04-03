@@ -40,7 +40,7 @@ const MyBookings = () => {
 
     try {
       await axios.delete(`${API_URL}/bookings/${bookingId}`);
-      // Refresh the list after deletion
+      
       fetchBookings();
     } catch (err) {
       alert(err.response?.data?.error ? t(err.response.data.error) : t('cancelBooking') + ' failed.');

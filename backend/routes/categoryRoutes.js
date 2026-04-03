@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Убедитесь, что путь к db.js правильный
+const db = require('../db'); 
 
-// GET /api/categories - Получить все категории
+
 router.get('/', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM Categories ORDER BY key ASC');
@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/categories/:id - Получить категорию по ID
+
 router.get('/:id', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM Categories WHERE id = $1', [req.params.id]);

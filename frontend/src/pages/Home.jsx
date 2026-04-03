@@ -1,5 +1,5 @@
-// frontend/src/pages/Home.jsx
-// Главная страница. Загружает список доступных услуг с бэкенда и отображает их.
+
+
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import ServiceCard from '../components/ServiceCard';
@@ -17,8 +17,8 @@ const Home = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [minRating, setMinRating] = useState('');
 
-  const [categories, setCategories] = useState([]); // New state for categories
-  const [selectedCategory, setSelectedCategory] = useState(''); // New state for selected category
+  const [categories, setCategories] = useState([]); 
+  const [selectedCategory, setSelectedCategory] = useState(''); 
 
   useEffect(() => {
     const fetchServices = async () => {

@@ -1,6 +1,6 @@
-// frontend/src/pages/AdminPanel.jsx
-// Админ-панель. Позволяет создавать, редактировать и удалять услуги.
-// Доступна только пользователю с флагом is_admin.
+
+
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,7 +10,7 @@ import { useLanguage } from '../LanguageContext';
 import API_URL from '../apiConfig';
 import './AdminPanel.css';
 
-// Base URL for images
+
 const IMAGE_BASE_URL = API_URL.replace('/api', '');
 
 const AdminPanel = () => {
@@ -34,13 +34,13 @@ const AdminPanel = () => {
     longitude: '',
   });
 
-  // Yandex Maps Refs
+  
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const placemarkInstance = useRef(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   
-  // States for images
+  
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
@@ -85,7 +85,7 @@ const AdminPanel = () => {
     }
 
     return () => {
-      // Basic cleanup
+      
       if (mapInstance.current) {
         mapInstance.current.destroy();
         mapInstance.current = null;
@@ -94,7 +94,7 @@ const AdminPanel = () => {
     };
   }, [user, navigate]);
 
-  // Handle Map Initialization
+  
   useEffect(() => {
     let isMounted = true;
 
@@ -104,7 +104,7 @@ const AdminPanel = () => {
 
         const initialCoords = formData.latitude && formData.longitude 
           ? [Number(formData.latitude), Number(formData.longitude)]
-          : [51.1694, 71.4491]; // Default to Astana
+          : [51.1694, 71.4491]; 
 
         try {
           mapRef.current.innerHTML = '';

@@ -12,7 +12,7 @@ const ServiceCard = ({ service }) => {
   const mapRef = React.useRef(null);
   const mapInstance = React.useRef(null);
 
-  // Map initialization
+  
   React.useEffect(() => {
     if (service.latitude && service.longitude && mapRef.current && window.ymaps && !mapInstance.current) {
       window.ymaps.ready(() => {
@@ -22,7 +22,7 @@ const ServiceCard = ({ service }) => {
           mapInstance.current = new window.ymaps.Map(mapRef.current, {
             center: coords,
             zoom: 14,
-            controls: [] // Minimalist map
+            controls: [] 
           });
           
           const placemark = new window.ymaps.Placemark(coords, {}, {
@@ -44,7 +44,7 @@ const ServiceCard = ({ service }) => {
     };
   }, [service]);
 
-  // Use the first image from the uploaded images array if it exists, otherwise fallback to placeholder
+  
   let imageUrl = 'https://tse4.mm.bing.net/th/id/OIP.RFDXdjS5yiwV0P2sposv-QHaEo?w=1600&h=1000&rs=1&pid=ImgDetMain&o=7&rm=3';
 
   if (service.images && service.images.length > 0) {
@@ -85,7 +85,7 @@ const ServiceCard = ({ service }) => {
         
         <p className="service-description">{service.short_description || service.description}</p>
         
-        {/* SMALL MAP PREVIEW */}
+        
         {service.latitude && service.longitude && (
           <div className="service-card-map-wrapper">
              <div ref={mapRef} className="service-card-mini-map"></div>

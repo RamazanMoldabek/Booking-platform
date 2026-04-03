@@ -50,7 +50,7 @@ const Booking = () => {
     }
 
     try {
-      const bookingDate = formData.date; // Date in YYYY-MM-DD
+      const bookingDate = formData.date; 
       const payload = {
         service_id: Number(serviceId),
         booking_date: bookingDate

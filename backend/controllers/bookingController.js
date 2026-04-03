@@ -13,7 +13,7 @@ exports.createBooking = async (req, res) => {
   }
 
   try {
-    // 1. Check if the time slot for this service is already occupied
+    
     const checkQuery = `
       SELECT id FROM bookings 
       WHERE service_id = $1 
@@ -28,7 +28,7 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-    // 2. Proceed with booking
+    
     const insertQuery = `
       INSERT INTO bookings (user_id, user_name, service_id, booking_date, status) 
       VALUES ($1, $2, $3, $4, 'pending') 
@@ -98,7 +98,7 @@ exports.cancelBooking = async (req, res) => {
   }
 
   try {
-    // 1. First, check if the booking exists and its current status
+    
     const findQuery = 'SELECT * FROM bookings WHERE id = $1 AND user_id = $2';
     const { rows: findRows } = await db.query(findQuery, [id, user.id]);
 
@@ -108,14 +108,14 @@ exports.cancelBooking = async (req, res) => {
 
     const booking = findRows[0];
 
-    // 2. Check if it's already cancelled
+    
     if (booking.status === 'cancelled') {
       return res.status(400).json({ error: 'Booking already cancelled.' });
     }
 
-    // 3. Update the booking status instead of deleting
-    // Note: We include cancelled_at in the update. 
-    // If the column wasn't added to your DB yet, this query might fail.
+    
+    
+    
     const updateQuery = `
       UPDATE bookings 
       SET status = 'cancelled', 
@@ -135,8 +135,8 @@ exports.cancelBooking = async (req, res) => {
   } catch (err) {
     console.error('Error cancelling booking:', err);
 
-    // Fallback if cancelled_at column doesn't exist yet
-    if (err.code === '42703') { // undefined_column
+    
+    if (err.code === '42703') { 
       try {
         const fallbackQuery = `
           UPDATE bookings 

@@ -40,9 +40,9 @@ exports.processPayment = async (req, res) => {
       return res.status(400).json({ error: 'Payment amount must equal the booking price.' });
     }
 
-    const paymentStatus = 'completed'; // In a real app, this comes from a Stripe/PayPal webhook
+    const paymentStatus = 'completed'; 
 
-    // Insert payment record
+    
     const insertPaymentQuery = `
       INSERT INTO payments (booking_id, amount, status) 
       VALUES ($1, $2, $3) RETURNING *
@@ -50,7 +50,7 @@ exports.processPayment = async (req, res) => {
     const paymentValues = [booking_id, amount, paymentStatus];
     const newPayment = await db.query(insertPaymentQuery, paymentValues);
 
-    // Update booking status
+    
     const updateBookingQuery = `
       UPDATE bookings SET status = 'paid' WHERE id = $1 RETURNING *
     `;

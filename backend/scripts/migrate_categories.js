@@ -6,7 +6,7 @@ const migrate = async () => {
   try {
     console.log('Starting migration...');
 
-    // 1. Create Categories table
+    
     await db.query(`
       CREATE TABLE IF NOT EXISTS Categories (
         id SERIAL PRIMARY KEY,
@@ -15,7 +15,7 @@ const migrate = async () => {
       )
     `);
 
-    // Check if 'name' column exists (in case table existed without it)
+    
     const checkNameCol = await db.query(`
       SELECT column_name 
       FROM information_schema.columns 
@@ -27,7 +27,7 @@ const migrate = async () => {
     }
     console.log('Categories table ensured.');
 
-    // 2. Insert default categories
+    
     const categories = [
       ['cars', 'Машины'],
       ['special_tech', 'Спецтехника'],
@@ -43,7 +43,7 @@ const migrate = async () => {
     }
     console.log('Default categories inserted.');
 
-    // 3. Add category_id to services
+    
     const checkCol = await db.query(`
       SELECT column_name 
       FROM information_schema.columns 
@@ -57,7 +57,7 @@ const migrate = async () => {
       console.log('category_id column already exists.');
     }
 
-    // 4. Also add 'images' column if missing (noticed in adminController)
+    
     const checkImagesCol = await db.query(`
       SELECT column_name 
       FROM information_schema.columns 
@@ -69,7 +69,7 @@ const migrate = async () => {
       console.log('images column added to services table.');
     }
 
-    // 5. Add 'rating', 'address', 'advantages', 'latitude', 'longitude' if missing
+    
     const colsToAdd = [
       ['rating', 'NUMERIC DEFAULT 4.5'],
       ['address', 'TEXT'],

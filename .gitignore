@@ -2,6 +2,7 @@
 /backend/.env
 /frontend/.env
 /dump.sql
+/remove_comments.js
 
 # Node modules
 /node_modules

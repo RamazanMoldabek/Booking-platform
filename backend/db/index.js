@@ -9,12 +9,12 @@ if (!process.env.DATABASE_URL) {
 
 const poolConfig = { 
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Обязательно для Render
+  ssl: { rejectUnauthorized: false } 
 };
 
 const pool = new Pool(poolConfig);
 
-// Проверка подключения к базе данных при инициализации
+
 pool.connect((err, client, release) => {
   if (err) {
     return console.error('Error acquiring client', err.stack);
