@@ -58,15 +58,15 @@ const Navbar = ({ theme, toggleTheme }) => {
             </Link>
           )}
 
-          
+          {/* В мобильном меню кнопки входа/выхода внизу списка ссылок */}
           <div className="mobile-only-actions">
             <div className="nav-login-wrapper">
                 {user ? (
-                <button type="button" className="nav-button logout-btn" onClick={handleLogout}>
+                <button type="button" className="nav-button logout-btn mobile-logout" onClick={handleLogout}>
                     {t('logout')}
                 </button>
                 ) : (
-                <Link to="/login" className="nav-link login-link">
+                <Link to="/login" className="nav-link login-link mobile-login">
                     <span>{t('login')}</span>
                 </Link>
                 )}
@@ -76,7 +76,18 @@ const Navbar = ({ theme, toggleTheme }) => {
 
         
         <div className="navbar-actions">
-          
+          <div className="desktop-only-auth">
+            {user ? (
+              <button type="button" className="nav-button logout-btn" onClick={handleLogout}>
+                {t('logout')}
+              </button>
+            ) : (
+              <Link to="/login" className="nav-link login-link">
+                <span>{t('login')}</span>
+              </Link>
+            )}
+          </div>
+
           <select
             className="lang-selector"
             value={lang}

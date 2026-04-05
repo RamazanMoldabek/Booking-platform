@@ -138,7 +138,7 @@
 }
 
 .nav-button:hover {
-  filter: brightness(1.15);
+  background-color: var(--button-hover);
   transform: translateY(-3px);
   box-shadow: var(--shadow-md), var(--shadow-glow);
 }
@@ -182,21 +182,30 @@
 }
 
 .login-link {
-  background-color: transparent;
-  border: 2px solid var(--button-bg);
-  color: var(--text-primary) !important;
-  transition: var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  border-radius: 12px;
+  background-color: var(--button-bg);
+  border: none;
+  color: white !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: var(--transition-bounce);
+  box-shadow: var(--shadow-sm);
 }
 
 .login-link:hover {
-  background-color: var(--button-bg);
-  color: white !important;
+  background-color: var(--button-hover);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md), var(--shadow-glow);
-  transform: translateY(-2px);
+  color: white !important;
 }
 
 .login-link:active {
-  transform: translateY(0) scale(0.96);
+  transform: translateY(-1px) scale(0.96);
   box-shadow: var(--shadow-sm);
 }
 
@@ -214,6 +223,11 @@
 
 .mobile-only-actions {
   display: none;
+}
+
+.desktop-only-auth {
+  display: flex;
+  align-items: center;
 }
 
 
@@ -280,7 +294,8 @@
   }
 
   .navbar-actions .nav-button.logout-btn,
-  .navbar-actions .nav-loginBtn {
+  .navbar-actions .nav-loginBtn,
+  .desktop-only-auth {
     display: none;
   }
 

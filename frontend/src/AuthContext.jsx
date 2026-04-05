@@ -1,21 +1,15 @@
-
-
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import API_URL from './apiConfig';
-
-
-
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('authUser');
+    const saved = sessionStorage.getItem('authUser');
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('authToken') || '');
+  const [token, setToken] = useState(() => sessionStorage.getItem('authToken') || '');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -26,21 +20,21 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  
-  
+  // Сохраняем данные пользователя и JWT в localStorage,
+  // чтобы пользователь оставался залогинен при перезагрузке страницы.
   const saveAuth = (userData, accessToken) => {
     setUser(userData);
     setToken(accessToken);
-    localStorage.setItem('authUser', JSON.stringify(userData));
-    localStorage.setItem('authToken', accessToken);
+    sessionStorage.setItem('authUser', JSON.stringify(userData));
+    sessionStorage.setItem('authToken', accessToken);
   };
 
-  
+  // Очистка авторизации: удаляем токен и данные пользователя.
   const clearAuth = () => {
     setUser(null);
     setToken('');
-    localStorage.removeItem('authUser');
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authUser');
+    sessionStorage.removeItem('authToken');
     delete axios.defaults.headers.common.Authorization;
   };
 
